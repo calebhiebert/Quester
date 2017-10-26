@@ -19,6 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".QuestView" />
+        <activity android:name=".CampaignView"></activity>
     </application>
 
 </manifest>

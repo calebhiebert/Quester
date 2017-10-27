@@ -1,12 +1,16 @@
-package com.piikl.quester
+package com.piikl.quester.activity
 
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
+import com.piikl.quester.R
+import com.piikl.quester.adapter.CampaignListAdapter
 import com.piikl.quester.api.Campaign
 import com.piikl.quester.api.QuesterService
 import retrofit2.Call
@@ -23,7 +27,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         val questerService = Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:8080")
+                .baseUrl("http://192.168.1.111:8080")
                 .addConverterFactory(JacksonConverterFactory.create())
                 .build().create(QuesterService::class.java)
     }
@@ -42,6 +46,22 @@ class MainActivity : AppCompatActivity() {
         campaignRecyclerView.adapter = adapter
 
         updateData()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_campaign_list, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.mnuCampaignListCreateNew -> {
+                val intent = Intent(this, CreateCampaign::class.java)
+                startActivity(intent)
+            }
+        }
+
+        return true
     }
 
     override fun onResume() {

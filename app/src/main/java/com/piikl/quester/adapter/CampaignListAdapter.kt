@@ -1,10 +1,12 @@
-package com.piikl.quester
+package com.piikl.quester.adapter
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.piikl.quester.R
+import com.piikl.quester.activity.MainActivity
 import com.piikl.quester.api.Campaign
 
 class CampaignListAdapter : RecyclerView.Adapter<CampaignListAdapter.ViewHolder>() {
@@ -16,7 +18,7 @@ class CampaignListAdapter : RecyclerView.Adapter<CampaignListAdapter.ViewHolder>
 
         fun bind(item: Campaign) {
             titleView.text = item.name
-            creatorView.text = "Created by ${item.creator!!.name}"
+            creatorView.text = "Created by ${item.creator?.name}"
 
             itemView.setOnClickListener({
                 (itemView.context as MainActivity).onCampaignSelected(item)

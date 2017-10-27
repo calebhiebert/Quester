@@ -1,4 +1,4 @@
-package com.piikl.quester
+package com.piikl.quester.adapter
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import com.piikl.quester.R
+import com.piikl.quester.activity.CampaignView
 import com.piikl.quester.api.Quest
 
 class QuestListAdapter : RecyclerView.Adapter<QuestListAdapter.ViewHolder>() {
@@ -17,7 +19,7 @@ class QuestListAdapter : RecyclerView.Adapter<QuestListAdapter.ViewHolder>() {
 
         fun bind(quest: Quest) {
             name.text = quest.name
-            description.text = quest.details.substring(0, minOf(quest.details.length, 150 - 3)) + "..."
+            description.text = (quest.details?.substring(0, minOf(quest.details!!.length, 150 - 3))) + "..."
 
             name.isEnabled = !(quest.status == Quest.Status.HIDDEN || quest.status == Quest.Status.LOCKED)
 

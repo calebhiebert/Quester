@@ -1,4 +1,4 @@
-package com.piikl.quester
+package com.piikl.quester.activity
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import com.piikl.quester.R
 import com.piikl.quester.api.Quest
 import retrofit2.Call
 import retrofit2.Callback

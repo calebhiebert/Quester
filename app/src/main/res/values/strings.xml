@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Quester</string>
+    <string name="new_campaign">New Campaign</string>
+    <string name="save">Save</string>
+    <string name="name">Name</string>
+    <string name="campaign_name">Campaign Name</string>
+    <string name="length_error_longer_than">The name must be longer than %d characters</string>
+    <string name="remove_campaign">Delete Campaign</string>
 </resources>

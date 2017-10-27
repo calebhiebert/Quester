@@ -1,5 +1,6 @@
 package com.piikl.quester.api
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.piikl.quester.R
 import com.piikl.quester.api.Quest.Status.*
 import java.util.*
@@ -8,17 +9,15 @@ class Quest() {
 
     var id: Long = 0
 
-    lateinit var name: String
-
-    lateinit var updated: Date
-
-    lateinit var created: Date
+    var name: String? = null
+    var updated: Date? = null
+    var created: Date? = null
 
     var unlockedBy: List<Quest>? = null
 
-    lateinit var unlockMode: UnlockMode
+    var unlockMode: UnlockMode? = null
 
-    lateinit var status: Status
+    var status: Status? = null
 
     var unlocks: Quest? = null
 
@@ -26,9 +25,10 @@ class Quest() {
 
     var questGiver: String? = null
 
-    lateinit var details: String
+    var details: String? = null
 
-    lateinit var campaign: Campaign
+    @JsonIgnoreProperties("quests")
+    var campaign: Campaign? = null
 
     enum class Status {
         COMPLETE, INCOMPLETE, IN_PROGRESS, LOCKED, HIDDEN

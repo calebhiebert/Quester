@@ -1,10 +1,7 @@
 package com.piikl.quester.api
 
 import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
+import retrofit2.http.*
 
 interface QuesterService {
 
@@ -20,9 +17,13 @@ interface QuesterService {
     @GET("/campaign/{id}")
     fun getCampaign(@Path("id") campaignId: String): Call<Campaign>
 
-    @POST
-    fun createCampaign(@Body campaign: Campaign): Call<Campaign>
+    @FormUrlEncoded
+    @POST("/campaign")
+    fun createCampaign(@Field("name") name: String): Call<Campaign>
 
-    @POST
+    @POST("/quest")
     fun createQuest(@Body quest: Quest): Call<Quest>
+
+    @DELETE("/campaign/{id}")
+    fun deleteCampaign(@Path("id") campaignId: String): Call<Campaign>
 }

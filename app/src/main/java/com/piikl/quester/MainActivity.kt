@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         val questerService = Retrofit.Builder()
-                .baseUrl("http://10.65.48.47:8080")
+                .baseUrl("http://10.0.2.2:8080")
                 .addConverterFactory(JacksonConverterFactory.create())
                 .build().create(QuesterService::class.java)
     }

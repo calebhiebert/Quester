@@ -49,24 +49,13 @@ class QuestView : AppCompatActivity() {
         title.visibility = View.VISIBLE
         details.visibility = View.VISIBLE
 
-        when(quest.status) {
-            Quest.Status.LOCKED -> {
-                questIcon.setImageResource(R.drawable.ic_lock)
-                questIcon.visibility = View.VISIBLE
-            }
+        val resource = quest.getIconDrawble()
 
-            Quest.Status.HIDDEN -> {
-                questIcon.setImageResource(R.drawable.ic_hidden)
-                questIcon.visibility = View.VISIBLE
-            }
-
-            Quest.Status.IN_PROGRESS -> {
-                questIcon.setImageResource(R.drawable.ic_flag)
-                questIcon.visibility = View.VISIBLE
-            }
-            else -> {
-                questIcon.visibility = View.GONE
-            }
+        if(resource != null) {
+            questIcon.setImageResource(resource)
+            questIcon.visibility = View.VISIBLE
+        } else {
+            questIcon.visibility = View.GONE
         }
     }
 

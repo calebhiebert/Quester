@@ -18,7 +18,16 @@ class QuestListAdapter : RecyclerView.Adapter<QuestListAdapter.ViewHolder>() {
         fun bind(quest: Quest) {
             name.text = quest.name
             description.text = quest.details.substring(0, minOf(quest.details.length, 150 - 3)) + "..."
-            icon.setImageResource(R.drawable.ic_flag)
+
+            name.isEnabled = !(quest.status == Quest.Status.HIDDEN || quest.status == Quest.Status.LOCKED)
+
+            val iconResourceId = quest.getIconDrawble()
+
+            if(iconResourceId != null) {
+                icon.setImageResource(iconResourceId)
+            } else {
+                icon.visibility = View.INVISIBLE
+            }
 
             itemView.setOnClickListener({
                 (itemView.context as CampaignView).onQuestSelected(quest)

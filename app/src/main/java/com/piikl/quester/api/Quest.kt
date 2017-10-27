@@ -1,5 +1,7 @@
 package com.piikl.quester.api
 
+import com.piikl.quester.R
+import com.piikl.quester.api.Quest.Status.*
 import java.util.*
 
 class Quest() {
@@ -34,5 +36,16 @@ class Quest() {
 
     enum class UnlockMode {
         ALL, ANY
+    }
+
+    fun getIconDrawble(): Int? {
+        return when(status) {
+            INCOMPLETE -> R.drawable.ic_flag_o
+            IN_PROGRESS -> R.drawable.ic_flag
+            LOCKED -> R.drawable.ic_lock
+            HIDDEN -> R.drawable.ic_hidden
+            COMPLETE -> R.drawable.ic_check_circle
+            else -> null
+        }
     }
 }

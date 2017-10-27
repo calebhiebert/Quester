@@ -1,6 +1,7 @@
 package com.piikl.quester
 
 import android.support.v7.widget.RecyclerView
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -16,19 +17,29 @@ class QuestListAdapter : RecyclerView.Adapter<QuestListAdapter.ViewHolder>() {
 
         fun bind(quest: Quest) {
             name.text = quest.name
-            description.text = quest.details.substring(0, 150)
+            description.text = quest.details.substring(0, minOf(quest.details.length, 150 - 3)) + "..."
             icon.setImageResource(R.drawable.ic_flag)
+
+            itemView.setOnClickListener({
+                (itemView.context as CampaignView).onQuestSelected(quest)
+            })
         }
     }
 
     var questList: List<Quest>? = null
-
-    override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    set(value) {
+        field = value
+        notifyDataSetChanged()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(questList!![position])
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return ViewHolder(LayoutInflater
+                .from(parent.context)
+                .inflate(R.layout.view_quest_list_item, parent, false))
     }
 
     override fun getItemCount(): Int {

@@ -6,32 +6,66 @@
     android:layout_height="match_parent"
     tools:context="com.piikl.quester.QuestView">
 
-    <TextView
-        android:id="@+id/txtQuestViewQuestTitle"
-        android:layout_width="0dp"
+    <ProgressBar
+        android:id="@+id/ldgQuestViewLoader"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:layout_marginLeft="16dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Example Quest with a very long name that is so long"
-        android:textAppearance="@android:style/TextAppearance.Material.Large"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/txtQuestViewDetailView"
-        android:layout_width="367dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed iaculis mollis purus vitae convallis. Suspendisse auctor commodo odio, sed lacinia risus sollicitudin id. Mauris mattis, eros at lobortis sodales, diam erat convallis purus, at auctor turpis nulla ultrices risus. Pellentesque hendrerit sem vitae placerat accumsan. Duis sapien eros, eleifend non congue id, euismod sit amet quam. Aliquam fringilla odio mi, id posuere massa elementum ut. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aliquam eget tristique tellus. In a neque molestie, fermentum arcu aliquet, sagittis sem. Mauris vel efficitur felis. Aenean tempor lectus leo, ac ornare lorem posuere a. Suspendisse interdum tempor vulputate. Vestibulum efficitur laoreet dui, nec scelerisque libero volutpat vel. Donec id libero vitae felis iaculis dapibus. Praesent venenatis quam sapien, vel vestibulum libero luctus sit amet. Donec sed lobortis elit."
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtQuestViewQuestTitle" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/txtQuestViewQuestTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Example Quest with a very long name that is so long"
+                android:textAppearance="@android:style/TextAppearance.Material.Large"
+                app:layout_constraintEnd_toStartOf="@+id/imgQuestViewQuestIcon"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/txtQuestViewDetailView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed iaculis mollis purus vitae convallis. Suspendisse auctor commodo odio, sed lacinia risus sollicitudin id. Mauris mattis, eros at lobortis sodales, diam erat convallis purus, at auctor turpis nulla ultrices risus. Pellentesque hendrerit sem vitae placerat accumsan. Duis sapien eros, eleifend non congue id, euismod sit amet quam. Aliquam fringilla odio mi, id posuere massa elementum ut. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aliquam eget tristique tellus. In a neque molestie, fermentum arcu aliquet, sagittis sem. Mauris vel efficitur felis. Aenean tempor lectus leo, ac ornare lorem posuere a. Suspendisse interdum tempor vulputate. Vestibulum efficitur laoreet dui, nec scelerisque libero volutpat vel. Donec id libero vitae felis iaculis dapibus. Praesent venenatis quam sapien, vel vestibulum libero luctus sit amet. Donec sed lobortis elit."
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txtQuestViewQuestTitle" />
+
+            <ImageView
+                android:id="@+id/imgQuestViewQuestIcon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_lock" />
+        </android.support.constraint.ConstraintLayout>
+    </ScrollView>
+
 </android.support.constraint.ConstraintLayout>

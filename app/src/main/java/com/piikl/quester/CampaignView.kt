@@ -1,5 +1,6 @@
 package com.piikl.quester
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -8,6 +9,7 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.piikl.quester.api.Campaign
+import com.piikl.quester.api.Quest
 import retrofit2.Call
 import retrofit2.Response
 
@@ -52,6 +54,15 @@ class CampaignView : AppCompatActivity() {
         titleView.visibility = View.VISIBLE
         creatorView.visibility = View.VISIBLE
         loadingWheel.visibility = View.GONE
+
+        questListAdapter.questList = campaign.quests
+    }
+
+    fun onQuestSelected(quest: Quest) {
+        val intent = Intent(this, QuestView::class.java)
+        intent.putExtra("quest_id", quest.id)
+
+        startActivity(intent)
     }
 
     private fun loadData(id: Long) {

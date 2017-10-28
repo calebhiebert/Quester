@@ -27,7 +27,6 @@ class CampaignEdit : CampaignCrud() {
         }
     }
 
-
     override fun save() {
 
     }

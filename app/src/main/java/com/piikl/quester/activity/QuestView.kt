@@ -33,12 +33,14 @@ class QuestView : AppCompatActivity() {
         details.visibility = View.INVISIBLE
         questIcon.visibility = View.GONE
 
-        val id = intent.getLongExtra("quest_id", 0)
+        val json = intent.getStringExtra("quest_json")
+        val quest = MainActivity.mapper.readValue(json, Quest::class.java)
 
-        if(id == 0L) {
+        if(quest.id == 0L) {
             finish()
         } else {
-            loadData(id)
+            onDataLoaded(quest)
+            loadData(quest.id)
         }
     }
 

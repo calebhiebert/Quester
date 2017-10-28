@@ -1,5 +1,6 @@
 package com.piikl.quester.api
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.piikl.quester.R
 import com.piikl.quester.api.Quest.Status.*
@@ -38,6 +39,7 @@ class Quest() {
         ALL, ANY
     }
 
+    @JsonIgnore
     fun getIconDrawble(): Int? {
         return when(status) {
             INCOMPLETE -> R.drawable.ic_flag_o

@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.piikl.quester.R
 import com.piikl.quester.adapter.CampaignListAdapter
 import com.piikl.quester.api.Campaign
@@ -31,6 +32,8 @@ class MainActivity : AppCompatActivity() {
                 .baseUrl("http://192.168.1.111:8080")
                 .addConverterFactory(JacksonConverterFactory.create())
                 .build().create(QuesterService::class.java)
+
+        val mapper = ObjectMapper()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,7 +81,8 @@ class MainActivity : AppCompatActivity() {
 
     fun onCampaignSelected(campaign: Campaign) {
         val intent = Intent(this, CampaignView::class.java)
-        intent.putExtra("campaign_id", campaign.id)
+//        intent.putExtra("campaign_id", campaign.id)
+        intent.putExtra("campaign_json", mapper.writeValueAsString(campaign))
 
         startActivity(intent)
     }

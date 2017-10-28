@@ -22,7 +22,8 @@
         <activity android:name=".activity.CampaignView" />
         <activity android:name=".activity.CreateCampaign" />
         <activity android:name=".activity.CampaignCrud" />
-        <activity android:name=".activity.CampaignEdit"></activity>
+        <activity android:name=".activity.CampaignEdit" />
+        <activity android:name=".activity.LoginActivity"></activity>
     </application>
 
 </manifest>

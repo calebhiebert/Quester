@@ -4,6 +4,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/mnuCampaignViewRefresh"
+        android:title="Refresh" />
+    <item
         android:id="@+id/mnuCampaignViewEdit"
         android:icon="@drawable/ic_pencil_square"
         android:title="Edit"

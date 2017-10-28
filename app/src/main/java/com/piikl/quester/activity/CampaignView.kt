@@ -27,15 +27,16 @@ class CampaignView : AppCompatActivity() {
     private lateinit var questListView: RecyclerView
     private lateinit var loadingWheel: ProgressBar
 
-    private var campaign: Campaign? = null
+    lateinit var campaign: Campaign
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_campaign_view)
 
-        val id = intent.getLongExtra("campaign_id", 0)
+        val json = intent.getStringExtra("campaign_json")
+        campaign = MainActivity.mapper.readValue(json, Campaign::class.java)
 
-        if(id == 0L) {
+        if (campaign.id == 0L) {
             finish()
         } else {
             questListAdapter = QuestListAdapter()
@@ -51,7 +52,9 @@ class CampaignView : AppCompatActivity() {
             titleView.visibility = View.INVISIBLE
             creatorView.visibility = View.INVISIBLE
 
-            loadData(id)
+            onDataUpdated(campaign)
+
+            loadData(campaign.id)
         }
     }
 
@@ -63,28 +66,31 @@ class CampaignView : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.mnuCampaignViewDelete -> {
-                if(campaign != null) {
-                    MainActivity.questerService.deleteCampaign(campaign!!.id.toString()).enqueue(object : Callback<Campaign> {
-                        override fun onResponse(call: Call<Campaign>?, response: Response<Campaign>) {
-                            if(response.code() == 200) {
-                                finish()
-                            } else {
-                                Toast.makeText(this@CampaignView, response.errorBody().toString(), Toast.LENGTH_LONG).show()
-                            }
-                        }
 
-                        override fun onFailure(call: Call<Campaign>?, t: Throwable) {
-                            Toast.makeText(this@CampaignView, t.message, Toast.LENGTH_LONG).show()
+                MainActivity.questerService.deleteCampaign(campaign.id.toString()).enqueue(object : Callback<Campaign> {
+                    override fun onResponse(call: Call<Campaign>?, response: Response<Campaign>) {
+                        if (response.code() == 200) {
+                            finish()
+                        } else {
+                            Toast.makeText(this@CampaignView, response.errorBody().toString(), Toast.LENGTH_LONG).show()
                         }
-                    })
-                }
+                    }
+
+                    override fun onFailure(call: Call<Campaign>?, t: Throwable) {
+                        Toast.makeText(this@CampaignView, t.message, Toast.LENGTH_LONG).show()
+                    }
+                })
             }
 
             R.id.mnuCampaignViewEdit -> {
                 val intent = Intent(this, CampaignEdit::class.java)
-                intent.putExtra("campaign_id", campaign!!.id)
-                intent.putExtra("campaign_name", campaign!!.name)
+                intent.putExtra("campaign_id", campaign.id)
+                intent.putExtra("campaign_name", campaign.name)
                 startActivity(intent)
+            }
+
+            R.id.mnuCampaignViewRefresh -> {
+                loadData(campaign.id)
             }
         }
 
@@ -106,20 +112,22 @@ class CampaignView : AppCompatActivity() {
 
     fun onQuestSelected(quest: Quest) {
         val intent = Intent(this, QuestView::class.java)
-        intent.putExtra("quest_id", quest.id)
+        intent.putExtra("quest_json", MainActivity.mapper.writeValueAsString(quest))
 
         startActivity(intent)
     }
 
     private fun loadData(id: Long) {
-        MainActivity.questerService.getCampaign(id.toString()).enqueue(object: retrofit2.Callback<Campaign> {
+        MainActivity.questerService.getCampaign(id.toString()).enqueue(object : retrofit2.Callback<Campaign> {
             override fun onResponse(call: Call<Campaign>, response: Response<Campaign>) {
 
-                when(response.code()) {
+                when (response.code()) {
                     200 -> onDataUpdated(response.body()!!)
                     404 -> finish()
 
-                    else -> { Toast.makeText(this@CampaignView, "Got code ${response.code()} when loading campaign data", Toast.LENGTH_SHORT).show() }
+                    else -> {
+                        Toast.makeText(this@CampaignView, "Got code ${response.code()} when loading campaign data", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
 

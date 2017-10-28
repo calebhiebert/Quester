@@ -20,7 +20,9 @@
         </activity>
         <activity android:name=".activity.QuestView" />
         <activity android:name=".activity.CampaignView" />
-        <activity android:name=".activity.CreateCampaign"></activity>
+        <activity android:name=".activity.CreateCampaign" />
+        <activity android:name=".activity.CampaignCrud" />
+        <activity android:name=".activity.CampaignEdit"></activity>
     </application>
 
 </manifest>

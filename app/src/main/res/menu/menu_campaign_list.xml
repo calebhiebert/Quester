@@ -8,4 +8,7 @@
         android:enabled="true"
         android:title="@string/new_campaign"
         android:visible="true" />
+    <item
+        android:id="@+id/mnuCampaignListRefresh"
+        android:title="@string/refresh" />
 </menu>

@@ -79,6 +79,13 @@ class CampaignView : AppCompatActivity() {
                     })
                 }
             }
+
+            R.id.mnuCampaignViewEdit -> {
+                val intent = Intent(this, CampaignEdit::class.java)
+                intent.putExtra("campaign_id", campaign!!.id)
+                intent.putExtra("campaign_name", campaign!!.name)
+                startActivity(intent)
+            }
         }
 
         return true

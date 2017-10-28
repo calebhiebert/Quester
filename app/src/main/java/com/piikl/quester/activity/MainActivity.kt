@@ -9,6 +9,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
+import android.widget.Toast
 import com.piikl.quester.R
 import com.piikl.quester.adapter.CampaignListAdapter
 import com.piikl.quester.api.Campaign
@@ -59,6 +60,12 @@ class MainActivity : AppCompatActivity() {
                 val intent = Intent(this, CreateCampaign::class.java)
                 startActivity(intent)
             }
+
+            R.id.mnuCampaignListRefresh -> {
+                loader.visibility = View.VISIBLE
+                campaignRecyclerView.visibility = View.INVISIBLE
+                updateData()
+            }
         }
 
         return true
@@ -79,8 +86,17 @@ class MainActivity : AppCompatActivity() {
     private fun updateData() {
         questerService.listCampaigns().enqueue(object: Callback<List<Campaign>> {
             override fun onResponse(call: Call<List<Campaign>>, response: Response<List<Campaign>>) {
-                adapter.data = response.body()
-                loader.visibility = View.GONE
+                when (response.code()) {
+                    200 -> {
+                        adapter.data = response.body()
+                        loader.visibility = View.GONE
+                        campaignRecyclerView.visibility = View.VISIBLE
+                    }
+
+                    else -> {
+                        Toast.makeText(this@MainActivity, "Failed to load campaigns with code ${response.code()}", Toast.LENGTH_LONG).show()
+                    }
+                }
             }
 
             override fun onFailure(call: Call<List<Campaign>>, t: Throwable) {

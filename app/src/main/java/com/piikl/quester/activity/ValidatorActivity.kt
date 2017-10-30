@@ -1,7 +1,6 @@
 package com.piikl.quester.activity
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.widget.EditText
 import android.widget.Toast
 import com.mobsandgeeks.saripaar.ValidationError
@@ -11,7 +10,8 @@ abstract class ValidatorActivity : CustomActivity(), Validator.ValidationListene
 
     protected lateinit var validator: Validator
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         validator = Validator(this)
         validator.setValidationListener(this)
     }

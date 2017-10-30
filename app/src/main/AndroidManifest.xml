@@ -23,7 +23,8 @@
         <activity android:name=".activity.CreateCampaign" />
         <activity android:name=".activity.CampaignEdit" />
         <activity android:name=".activity.LoginActivity" />
-        <activity android:name=".activity.PrefsActivity"></activity>
+        <activity android:name=".activity.PrefsActivity" />
+        <activity android:name=".activity.QuestEdit"></activity>
     </application>
 
 </manifest>

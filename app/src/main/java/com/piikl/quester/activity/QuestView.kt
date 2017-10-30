@@ -1,6 +1,9 @@
 package com.piikl.quester.activity
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -16,10 +19,14 @@ import retrofit2.Response
 
 class QuestView : CustomActivity() {
 
+    val EDIT_QUEST = 1
+
     lateinit var title: TextView
     lateinit var details: TextView
     lateinit var loader: ProgressBar
     lateinit var questIcon: ImageView
+
+    private lateinit var quest: Quest
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +42,7 @@ class QuestView : CustomActivity() {
         questIcon.visibility = View.GONE
 
         val json = intent.getStringExtra("quest_json")
-        val quest = MainActivity.mapper.readValue(json, Quest::class.java)
+        quest = MainActivity.mapper.readValue(json, Quest::class.java)
 
         if(quest.id == 0L) {
             finish()
@@ -55,14 +62,29 @@ class QuestView : CustomActivity() {
             R.id.mnuSettings -> openSettings()
 
             R.id.mnuQuestViewEdit -> {
-
+                val intent = Intent(this, QuestEdit::class.java)
+                intent.putExtra("quest_json", MainActivity.mapper.writeValueAsString(quest))
+                startActivityForResult(intent, EDIT_QUEST)
             }
         }
 
         return true
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        if(requestCode == EDIT_QUEST) {
+            if(resultCode == Activity.RESULT_OK) {
+                val json = intent.getStringExtra("quest_json")
+                Log.d("Got quest", json)
+                quest = MainActivity.mapper.readValue(json, Quest::class.java)
+                onDataLoaded(quest)
+            }
+        }
+    }
+
     private fun onDataLoaded(quest: Quest) {
+        this.quest = quest
+
         title.text = quest.name
         details.text = quest.details
 

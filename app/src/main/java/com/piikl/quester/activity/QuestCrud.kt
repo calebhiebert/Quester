@@ -1,7 +1,6 @@
 package com.piikl.quester.activity
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
@@ -33,9 +32,17 @@ abstract class QuestCrud : ValidatorActivity() {
     protected lateinit var rdoLocked: RadioButton
     protected lateinit var rdoHidden: RadioButton
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.crud_quest)
+
+        nameInput = findViewById(R.id.txtNameInput)
+        detailsInput = findViewById(R.id.txtDetailsInput)
+        locationObtainedInput = findViewById(R.id.txtLocationObtainedInput)
+        questGiverInput = findViewById(R.id.txtQuestGiverInput)
+        rdoAvailable = findViewById(R.id.rdoAvailable)
+        rdoLocked = findViewById(R.id.rdoLocked)
+        rdoHidden = findViewById(R.id.rdoHidden)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

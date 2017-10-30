@@ -28,6 +28,9 @@ interface QuesterService {
     @POST("/quest")
     fun createQuest(@Body quest: Quest): Call<Quest>
 
+    @PATCH("/quest/{id}")
+    fun editQuest(@Path("id") questId: Long, @Body quest: Quest): Call<Quest>
+
     @DELETE("/campaign/{id}")
     fun deleteCampaign(@Path("id") campaignId: String): Call<Campaign>
 

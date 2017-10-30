@@ -1,6 +1,8 @@
 package com.piikl.quester.activity
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -41,6 +43,23 @@ class QuestView : CustomActivity() {
             onDataLoaded(quest)
             loadData(quest.id)
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_quest_view, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.mnuSettings -> openSettings()
+
+            R.id.mnuQuestViewEdit -> {
+
+            }
+        }
+
+        return true
     }
 
     private fun onDataLoaded(quest: Quest) {

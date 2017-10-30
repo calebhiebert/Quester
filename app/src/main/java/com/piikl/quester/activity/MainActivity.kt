@@ -43,22 +43,28 @@ class MainActivity : CustomActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        questerService = Retrofit.Builder()
-                .client(client)
-                .baseUrl(PreferenceManager.getDefaultSharedPreferences(this).getString("api_url", ""))
-                .addConverterFactory(JacksonConverterFactory.create())
-                .build().create(QuesterService::class.java)
+        val apiUrl: String? = try { PreferenceManager.getDefaultSharedPreferences(this).getString("api_url", "http://10.0.2.2:8080") } catch (e: Exception) { e.printStackTrace(); null }
+        if(apiUrl != null) {
+            questerService = Retrofit.Builder()
+                    .client(client)
+                    .baseUrl(apiUrl)
+                    .addConverterFactory(JacksonConverterFactory.create())
+                    .build().create(QuesterService::class.java)
 
-        campaignRecyclerView = findViewById(R.id.recMainCampaignDisplay)
-        loader = findViewById(R.id.ldgMainLoader)
+            campaignRecyclerView = findViewById(R.id.recMainCampaignDisplay)
+            loader = findViewById(R.id.ldgMainLoader)
 
-        val layoutManager = LinearLayoutManager(this)
-        campaignRecyclerView.layoutManager = layoutManager
+            val layoutManager = LinearLayoutManager(this)
+            campaignRecyclerView.layoutManager = layoutManager
 
-        adapter = CampaignListAdapter()
-        campaignRecyclerView.adapter = adapter
+            adapter = CampaignListAdapter()
+            campaignRecyclerView.adapter = adapter
 
-        updateData()
+            updateData()
+        } else {
+            Toast.makeText(this, "Could not get api url", Toast.LENGTH_LONG).show()
+            finish()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

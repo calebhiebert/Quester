@@ -15,10 +15,6 @@ class CreateCampaign : CampaignCrud() {
         title = "Create Campaign"
     }
 
-    override fun save() {
-        validator.validate()
-    }
-
     override fun onValidationSucceeded() {
         Toast.makeText(this, "Validation passes", Toast.LENGTH_SHORT).show()
 

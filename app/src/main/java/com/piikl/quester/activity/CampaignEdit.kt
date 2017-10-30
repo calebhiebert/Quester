@@ -24,7 +24,11 @@ class CampaignEdit : CampaignCrud() {
             finish()
     }
 
-    override fun save() {
+    private fun onDataLoaded() {
+        nameInput.setText(campaign.name)
+    }
+
+    override fun onValidationSucceeded() {
         MainActivity.questerService.editCampaign(campaign.id, nameInput.text.toString()).enqueue(object : Callback<Campaign> {
             override fun onResponse(call: Call<Campaign>?, response: Response<Campaign>) {
                 when(response.code()) {
@@ -40,9 +44,5 @@ class CampaignEdit : CampaignCrud() {
                 throw t
             }
         })
-    }
-
-    private fun onDataLoaded() {
-        nameInput.setText(campaign.name)
     }
 }

@@ -13,4 +13,7 @@ class Campaign {
 
     @JsonIgnoreProperties("campaigns")
     var creator: User? = null
+
+    @JsonIgnoreProperties("participatingIn")
+    var participants: MutableList<User>? = null
 }

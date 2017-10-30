@@ -21,9 +21,9 @@
         <activity android:name=".activity.QuestView" />
         <activity android:name=".activity.CampaignView" />
         <activity android:name=".activity.CreateCampaign" />
-        <activity android:name=".activity.CampaignCrud" />
         <activity android:name=".activity.CampaignEdit" />
-        <activity android:name=".activity.LoginActivity"></activity>
+        <activity android:name=".activity.LoginActivity" />
+        <activity android:name=".activity.PrefsActivity"></activity>
     </application>
 
 </manifest>

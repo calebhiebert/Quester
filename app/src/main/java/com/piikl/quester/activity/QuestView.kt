@@ -1,7 +1,6 @@
 package com.piikl.quester.activity
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -13,7 +12,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class QuestView : AppCompatActivity() {
+class QuestView : CustomActivity() {
 
     lateinit var title: TextView
     lateinit var details: TextView
@@ -63,7 +62,7 @@ class QuestView : AppCompatActivity() {
     }
 
     private fun loadData(id: Long) {
-        MainActivity.questerService.getQuest(id.toString()).enqueue(object : Callback<Quest> {
+        MainActivity.questerService.getQuest(id).enqueue(object : Callback<Quest> {
             override fun onFailure(call: Call<Quest>?, t: Throwable) {
                 Toast.makeText(applicationContext, "There was an error loading this quest $t", Toast.LENGTH_LONG).show()
             }

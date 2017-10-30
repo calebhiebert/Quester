@@ -8,5 +8,5 @@ class User {
 
     var password: String = ""
 
-    lateinit var campaigns: List<Campaign>
+    var campaigns: List<Campaign>? = null
 }

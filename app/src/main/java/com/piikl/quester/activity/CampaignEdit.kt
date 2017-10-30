@@ -9,52 +9,40 @@ import retrofit2.Response
 
 class CampaignEdit : CampaignCrud() {
 
-    private var campaign: Campaign? = null
+    lateinit protected var campaign: Campaign
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         title = "Edit Campaign"
 
-        val id = intent.getLongExtra("campaign_id", 0)
-        val name = intent.getStringExtra("campaign_name")
-        nameInput.setText(name)
+        val json = intent.getStringExtra("campaign_json")
+        campaign = MainActivity.mapper.readValue(json, Campaign::class.java)
+        onDataLoaded()
 
-        if(id == 0L)
+        if(campaign.id == 0L)
             finish()
-        else {
-            loadData(id)
-        }
     }
 
     override fun save() {
-
-    }
-
-    private fun onDataLoaded() {
-        nameInput.setText(campaign?.name)
-    }
-
-    private fun loadData(id: Long) {
-        MainActivity.questerService.getCampaign(id.toString()).enqueue(object : Callback<Campaign> {
-            override fun onFailure(call: Call<Campaign>?, t: Throwable) {
-                throw t
-            }
-
+        MainActivity.questerService.editCampaign(campaign.id, nameInput.text.toString()).enqueue(object : Callback<Campaign> {
             override fun onResponse(call: Call<Campaign>?, response: Response<Campaign>) {
-                when (response.code()) {
+                when(response.code()) {
                     200 -> {
-                        campaign = response.body()
-                        onDataLoaded()
-                    }
-
-                    404 -> {
                         finish()
                     }
 
                     else -> Toast.makeText(this@CampaignEdit, "Got code of ${response.code()}", Toast.LENGTH_LONG).show()
                 }
             }
+
+            override fun onFailure(call: Call<Campaign>?, t: Throwable) {
+                throw t
+            }
         })
+    }
+
+    private fun onDataLoaded() {
+        nameInput.setText(campaign.name)
     }
 }

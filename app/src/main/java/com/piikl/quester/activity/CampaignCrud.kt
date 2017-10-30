@@ -1,7 +1,6 @@
 package com.piikl.quester.activity
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
@@ -12,7 +11,7 @@ import com.mobsandgeeks.saripaar.annotation.Length
 import com.mobsandgeeks.saripaar.annotation.NotEmpty
 import com.piikl.quester.R
 
-abstract class CampaignCrud : AppCompatActivity(), Validator.ValidationListener {
+abstract class CampaignCrud : CustomActivity(), Validator.ValidationListener {
 
     @NotEmpty
     @Length(min = 4, max = 255, trim = true)

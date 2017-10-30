@@ -2,7 +2,6 @@ package com.piikl.quester.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.Menu
@@ -15,11 +14,12 @@ import com.piikl.quester.R
 import com.piikl.quester.adapter.QuestListAdapter
 import com.piikl.quester.api.Campaign
 import com.piikl.quester.api.Quest
+import com.piikl.quester.setVisibility
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class CampaignView : AppCompatActivity() {
+class CampaignView : CustomActivity() {
 
     private lateinit var titleView: TextView
     private lateinit var creatorView: TextView
@@ -33,10 +33,10 @@ class CampaignView : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_campaign_view)
 
-        val json = intent.getStringExtra("campaign_json")
-        campaign = MainActivity.mapper.readValue(json, Campaign::class.java)
+        val id = intent.getLongExtra("campaign_id", 0)
+        campaign = Campaign()
 
-        if (campaign.id == 0L) {
+        if (id == 0L) {
             finish()
         } else {
             questListAdapter = QuestListAdapter()
@@ -49,12 +49,10 @@ class CampaignView : AppCompatActivity() {
             questListView.layoutManager = LinearLayoutManager(this)
             questListView.adapter = questListAdapter
 
-            titleView.visibility = View.INVISIBLE
-            creatorView.visibility = View.INVISIBLE
+            setVisibility(View.INVISIBLE, titleView, creatorView, questListView)
+            setVisibility(View.VISIBLE, loadingWheel)
 
-            onDataUpdated(campaign)
-
-            loadData(campaign.id)
+            loadData(id)
         }
     }
 
@@ -84,14 +82,18 @@ class CampaignView : AppCompatActivity() {
 
             R.id.mnuCampaignViewEdit -> {
                 val intent = Intent(this, CampaignEdit::class.java)
-                intent.putExtra("campaign_id", campaign.id)
-                intent.putExtra("campaign_name", campaign.name)
+                intent.putExtra("campaign_json", MainActivity.mapper.writeValueAsString(campaign))
                 startActivity(intent)
             }
 
             R.id.mnuCampaignViewRefresh -> {
+                setVisibility(View.INVISIBLE, titleView, creatorView, questListView)
+                setVisibility(View.VISIBLE, loadingWheel)
+
                 loadData(campaign.id)
             }
+
+            R.id.mnuSettings -> openSettings()
         }
 
         return true
@@ -103,8 +105,7 @@ class CampaignView : AppCompatActivity() {
         titleView.text = campaign.name
         creatorView.text = "Created by ${campaign.creator?.name}"
 
-        titleView.visibility = View.VISIBLE
-        creatorView.visibility = View.VISIBLE
+        setVisibility(View.VISIBLE, titleView, creatorView, questListView)
         loadingWheel.visibility = View.GONE
 
         questListAdapter.questList = campaign.quests
@@ -118,7 +119,7 @@ class CampaignView : AppCompatActivity() {
     }
 
     private fun loadData(id: Long) {
-        MainActivity.questerService.getCampaign(id.toString()).enqueue(object : retrofit2.Callback<Campaign> {
+        MainActivity.questerService.getCampaign(id).enqueue(object : retrofit2.Callback<Campaign> {
             override fun onResponse(call: Call<Campaign>, response: Response<Campaign>) {
 
                 when (response.code()) {

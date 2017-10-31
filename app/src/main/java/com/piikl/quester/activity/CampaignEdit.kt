@@ -29,7 +29,10 @@ class CampaignEdit : CampaignCrud() {
     }
 
     override fun onValidationSucceeded() {
-        MainActivity.questerService.editCampaign(campaign.id, nameInput.text.toString()).enqueue(object : Callback<Campaign> {
+        val c = Campaign()
+        c.name = nameInput.text.toString().trim()
+
+        MainActivity.questerService.editCampaign(campaign.id, c).enqueue(object : Callback<Campaign> {
             override fun onResponse(call: Call<Campaign>?, response: Response<Campaign>) {
                 when(response.code()) {
                     200 -> {

@@ -7,7 +7,6 @@ import android.widget.EditText
 import android.widget.RadioButton
 import com.mobsandgeeks.saripaar.annotation.Length
 import com.mobsandgeeks.saripaar.annotation.NotEmpty
-import com.mobsandgeeks.saripaar.annotation.Optional
 import com.piikl.quester.R
 
 abstract class QuestCrud : ValidatorActivity() {
@@ -20,12 +19,10 @@ abstract class QuestCrud : ValidatorActivity() {
     @Length(min = 3, max = 16000)
     protected lateinit var detailsInput: EditText
 
-    @Optional
-    @Length(min = 1, max = 255)
+    @Length(min = 0, max = 255, trim = true)
     protected lateinit var locationObtainedInput: EditText
 
-    @Optional
-    @Length(min = 3, max = 255)
+    @Length(min = 0, max = 255, trim = true)
     protected lateinit var questGiverInput: EditText
 
     protected lateinit var rdoAvailable: RadioButton

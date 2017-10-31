@@ -17,16 +17,14 @@ interface QuesterService {
     @GET("/campaign/{id}")
     fun getCampaign(@Path("id") campaignId: Long): Call<Campaign>
 
-    @FormUrlEncoded
     @PATCH("/campaign/{id}")
-    fun editCampaign(@Path("id") campaignId: Long, @Field("name") name: String): Call<Campaign>
+    fun editCampaign(@Path("id") campaignId: Long, @Body campaign: Campaign): Call<Campaign>
 
-    @FormUrlEncoded
     @POST("/campaign")
     fun createCampaign(@Field("name") name: String): Call<Campaign>
 
-    @POST("/quest")
-    fun createQuest(@Body quest: Quest): Call<Quest>
+    @POST("/campaign/{id}/createQuest")
+    fun createQuest(@Path("id") campaignId: Long, @Body quest: Quest): Call<Quest>
 
     @PATCH("/quest/{id}")
     fun editQuest(@Path("id") questId: Long, @Body quest: Quest): Call<Quest>

@@ -2,6 +2,7 @@ package com.piikl.quester.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.Menu
@@ -26,8 +27,11 @@ class CampaignView : CustomActivity() {
     private lateinit var questListAdapter: QuestListAdapter
     private lateinit var questListView: RecyclerView
     private lateinit var loadingWheel: ProgressBar
+    private lateinit var createQuest: FloatingActionButton
 
     lateinit var campaign: Campaign
+
+    private var loading = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,11 +49,12 @@ class CampaignView : CustomActivity() {
             creatorView = findViewById(R.id.txtCampaignViewCreator)
             questListView = findViewById(R.id.recCampaignViewQuestList)
             loadingWheel = findViewById(R.id.ldgCampaignViewLoader)
+            createQuest = findViewById(R.id.fabCreateQuest)
 
             questListView.layoutManager = LinearLayoutManager(this)
             questListView.adapter = questListAdapter
 
-            setVisibility(View.INVISIBLE, titleView, creatorView, questListView)
+            setVisibility(View.INVISIBLE, titleView, creatorView, questListView, createQuest)
             setVisibility(View.VISIBLE, loadingWheel)
 
             loadData(id)
@@ -59,6 +64,11 @@ class CampaignView : CustomActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_campaign_view, menu)
         return true
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadData(campaign.id)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -87,7 +97,7 @@ class CampaignView : CustomActivity() {
             }
 
             R.id.mnuCampaignViewRefresh -> {
-                setVisibility(View.INVISIBLE, titleView, creatorView, questListView)
+                setVisibility(View.INVISIBLE, titleView, creatorView, questListView, createQuest)
                 setVisibility(View.VISIBLE, loadingWheel)
 
                 loadData(campaign.id)
@@ -102,10 +112,16 @@ class CampaignView : CustomActivity() {
     private fun onDataUpdated(campaign: Campaign) {
         this.campaign = campaign
 
+        createQuest.setOnClickListener({
+            val intent = Intent(this, QuestCreate::class.java)
+            intent.putExtra("campaign_id", campaign.id)
+            startActivity(intent)
+        })
+
         titleView.text = campaign.name
         creatorView.text = "Created by ${campaign.creator?.name}"
 
-        setVisibility(View.VISIBLE, titleView, creatorView, questListView)
+        setVisibility(View.VISIBLE, titleView, creatorView, questListView, createQuest)
         loadingWheel.visibility = View.GONE
 
         questListAdapter.questList = campaign.quests
@@ -119,22 +135,28 @@ class CampaignView : CustomActivity() {
     }
 
     private fun loadData(id: Long) {
-        MainActivity.questerService.getCampaign(id).enqueue(object : retrofit2.Callback<Campaign> {
-            override fun onResponse(call: Call<Campaign>, response: Response<Campaign>) {
+        if(!loading) {
+            loading = true
 
-                when (response.code()) {
-                    200 -> onDataUpdated(response.body()!!)
-                    404 -> finish()
+            MainActivity.questerService.getCampaign(id).enqueue(object : retrofit2.Callback<Campaign> {
+                override fun onResponse(call: Call<Campaign>, response: Response<Campaign>) {
+                    loading = false
 
-                    else -> {
-                        Toast.makeText(this@CampaignView, "Got code ${response.code()} when loading campaign data", Toast.LENGTH_SHORT).show()
+                    when (response.code()) {
+                        200 -> onDataUpdated(response.body()!!)
+                        404 -> finish()
+
+                        else -> {
+                            Toast.makeText(this@CampaignView, "Got code ${response.code()} when loading campaign data", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
-            }
 
-            override fun onFailure(call: Call<Campaign>, t: Throwable) {
-                throw t
-            }
-        })
+                override fun onFailure(call: Call<Campaign>, t: Throwable) {
+                    loading = false
+                    throw t
+                }
+            })
+        }
     }
 }

@@ -71,10 +71,10 @@ class QuestView : CustomActivity() {
         return true
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if(requestCode == EDIT_QUEST) {
-            if(resultCode == Activity.RESULT_OK) {
-                val json = intent.getStringExtra("quest_json")
+            if(resultCode == Activity.RESULT_OK && data != null) {
+                val json = data.getStringExtra("quest_json")
                 Log.d("Got quest", json)
                 quest = MainActivity.mapper.readValue(json, Quest::class.java)
                 onDataLoaded(quest)

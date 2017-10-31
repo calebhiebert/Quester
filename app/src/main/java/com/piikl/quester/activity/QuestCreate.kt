@@ -9,30 +9,23 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class QuestEdit : QuestCrud() {
+class QuestCreate : QuestCrud() {
 
-    lateinit var quest: Quest
+    private var campaignId: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val json = intent.getStringExtra("quest_json")
-        quest = MainActivity.mapper.readValue(json, Quest::class.java)
+        campaignId = intent.getLongExtra("campaign_id", 0)
 
-        nameInput.setText(quest.name)
-        detailsInput.setText(quest.details)
-        locationObtainedInput.setText(quest.locationObtained)
-        questGiverInput.setText(quest.questGiver)
+        if(campaignId == 0L)
+            finish()
+        else {
 
-        when(quest.status) {
-            Quest.Status.LOCKED -> rdoLocked.isChecked = true
-            Quest.Status.HIDDEN -> rdoHidden.isChecked = true
-            else -> rdoAvailable.isChecked = true
         }
     }
 
     override fun onValidationSucceeded() {
-
         val newQuest = Quest()
         newQuest.name = nameInput.text.toString().trim()
         newQuest.details = detailsInput.text.toString().trim()
@@ -46,12 +39,12 @@ class QuestEdit : QuestCrud() {
         newQuest.status = when {
             rdoLocked.isChecked -> Quest.Status.LOCKED
             rdoHidden.isChecked -> Quest.Status.HIDDEN
-
-            rdoAvailable.isChecked && quest.status != Quest.Status.LOCKED && quest.status != Quest.Status.HIDDEN -> quest.status
             else -> Quest.Status.INCOMPLETE
         }
 
-        MainActivity.questerService.editQuest(quest.id, newQuest).enqueue(object : Callback<Quest> {
+        newQuest.unlockMode = Quest.UnlockMode.ALL
+
+        MainActivity.questerService.createQuest(campaignId, newQuest).enqueue(object : Callback<Quest> {
             override fun onFailure(call: Call<Quest>?, t: Throwable) {
                 throw t
             }
@@ -66,17 +59,12 @@ class QuestEdit : QuestCrud() {
                     }
 
                     else -> {
-                        Toast.makeText(this@QuestEdit, "Saving quest failed with code ${response.code()}", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this@QuestCreate, "Saving quest failed with code ${response.code()}", Toast.LENGTH_LONG).show()
                         setResult(Activity.RESULT_CANCELED)
                         finish()
                     }
                 }
             }
         })
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        setResult(Activity.RESULT_CANCELED)
     }
 }

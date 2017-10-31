@@ -6,6 +6,17 @@
     android:layout_height="match_parent"
     tools:context="com.piikl.quester.activity.CampaignView">
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabCreateQuest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:clickable="true"
+        app:layout_constraintBottom_toBottomOf="@+id/recCampaignViewQuestList"
+        app:layout_constraintEnd_toEndOf="@+id/recCampaignViewQuestList"
+        app:srcCompat="@drawable/ic_pencil_square" />
+
     <ProgressBar
         android:id="@+id/ldgCampaignViewLoader"
         style="?android:attr/progressBarStyle"

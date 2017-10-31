@@ -21,7 +21,7 @@ interface QuesterService {
     fun editCampaign(@Path("id") campaignId: Long, @Body campaign: Campaign): Call<Campaign>
 
     @POST("/campaign")
-    fun createCampaign(@Field("name") name: String): Call<Campaign>
+    fun createCampaign(@Body campaign: Campaign): Call<Campaign>
 
     @POST("/campaign/{id}/createQuest")
     fun createQuest(@Path("id") campaignId: Long, @Body quest: Quest): Call<Quest>

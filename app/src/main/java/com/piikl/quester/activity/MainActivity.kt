@@ -75,7 +75,7 @@ class MainActivity : CustomActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.mnuCampaignListCreateNew -> {
-                val intent = Intent(this, CreateCampaign::class.java)
+                val intent = Intent(this, CampaignCreate::class.java)
                 startActivity(intent)
             }
 

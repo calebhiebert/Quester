@@ -3,9 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/mnuSettings"
-        android:title="@string/settings" />
-    <item
         android:id="@+id/mnuCampaignListCreateNew"
         android:checkable="false"
         android:enabled="true"

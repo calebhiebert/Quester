@@ -4,10 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import com.piikl.quester.api.ErrorHandler
 import com.piikl.quester.api.Quest
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.net.SocketTimeoutException
 
 class QuestEdit : QuestCrud() {
 
@@ -51,9 +53,9 @@ class QuestEdit : QuestCrud() {
             else -> Quest.Status.INCOMPLETE
         }
 
-        MainActivity.questerService.editQuest(quest.id, newQuest).enqueue(object : Callback<Quest> {
+        MainActivity.questerService!!.editQuest(quest.id, newQuest).enqueue(object : Callback<Quest> {
             override fun onFailure(call: Call<Quest>?, t: Throwable) {
-                throw t
+                ErrorHandler.handleErrors(this@QuestEdit, t)
             }
 
             override fun onResponse(call: Call<Quest>?, response: Response<Quest>) {

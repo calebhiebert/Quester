@@ -3,11 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/mnuSettings"
-        android:title="@string/settings" />
-    <item
         android:id="@+id/mnuQuestViewEdit"
         android:icon="@drawable/ic_pencil_square"
         android:title="Edit"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/mnuDeleteQuest"
+        android:title="@string/remove_quest" />
 </menu>

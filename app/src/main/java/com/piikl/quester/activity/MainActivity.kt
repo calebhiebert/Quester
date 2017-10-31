@@ -15,6 +15,7 @@ import com.piikl.quester.AuthInterceptor
 import com.piikl.quester.R
 import com.piikl.quester.adapter.CampaignListAdapter
 import com.piikl.quester.api.Campaign
+import com.piikl.quester.api.ErrorHandler
 import com.piikl.quester.api.QuesterService
 import okhttp3.OkHttpClient
 import retrofit2.Call
@@ -30,49 +31,87 @@ class MainActivity : CustomActivity() {
     lateinit var loader: ProgressBar
 
     companion object {
-        private val client = OkHttpClient.Builder()
-                .addInterceptor(AuthInterceptor("Panchem", "Tapemeasure1"))
-                .build()
-
-        lateinit var questerService: QuesterService
+        var questerService: QuesterService? = null
 
         val mapper = ObjectMapper()
+
+        fun createApiClient(url: String, username: String, password: String) {
+            val client = OkHttpClient.Builder()
+                    .addInterceptor(AuthInterceptor(username, password))
+                    .build()
+
+            questerService = Retrofit.Builder()
+                    .client(client)
+                    .baseUrl(url)
+                    .addConverterFactory(JacksonConverterFactory.create())
+                    .build().create(QuesterService::class.java)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val apiUrl: String? = try { PreferenceManager.getDefaultSharedPreferences(this).getString("api_url", "http://10.0.2.2:8080") } catch (e: Exception) { e.printStackTrace(); null }
-        if(apiUrl != null) {
-            questerService = Retrofit.Builder()
-                    .client(client)
-                    .baseUrl(apiUrl)
-                    .addConverterFactory(JacksonConverterFactory.create())
-                    .build().create(QuesterService::class.java)
+        campaignRecyclerView = findViewById(R.id.recMainCampaignDisplay)
+        loader = findViewById(R.id.ldgMainLoader)
 
-            campaignRecyclerView = findViewById(R.id.recMainCampaignDisplay)
-            loader = findViewById(R.id.ldgMainLoader)
+        val layoutManager = LinearLayoutManager(this)
+        campaignRecyclerView.layoutManager = layoutManager
 
-            val layoutManager = LinearLayoutManager(this)
-            campaignRecyclerView.layoutManager = layoutManager
+        adapter = CampaignListAdapter()
+        campaignRecyclerView.adapter = adapter
 
-            adapter = CampaignListAdapter()
-            campaignRecyclerView.adapter = adapter
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
-            updateData()
-        } else {
-            Toast.makeText(this, "Could not get api url", Toast.LENGTH_LONG).show()
-            finish()
+        val apiUrl: String? = try { prefs.getString("api_url", null) } catch (e: Exception) { e.printStackTrace(); null }
+        val username: String? = try { prefs.getString("username", null) } catch (e: Exception) { e.printStackTrace(); null }
+        val password: String? = try { prefs.getString("password", null) } catch (e: Exception) { e.printStackTrace(); null }
+
+        if(password.isNullOrEmpty() || username.isNullOrEmpty()) {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            return
         }
+
+        if(apiUrl.isNullOrEmpty()) {
+            Toast.makeText(this, "Api url is not set", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        createApiClient(apiUrl!!, username!!, password!!)
+
+        prefs.registerOnSharedPreferenceChangeListener({ pref, value ->
+            when(value) {
+                "api_url" -> {
+                    createApiClient(pref.getString("api_url", null), pref.getString("username", null), pref.getString("password", null))
+                }
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        super.onCreateOptionsMenu(menu)
+
+        if(questerService != null) {
+            val item = menu.add(Menu.NONE, Menu.NONE, Menu.NONE, R.string.log_out)
+            item.setOnMenuItemClickListener {
+                val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+                val edit = prefs.edit()
+                edit.remove("username")
+                edit.remove("password")
+                edit.apply()
+                recreate()
+                true
+            }
+        }
+
         menuInflater.inflate(R.menu.menu_campaign_list, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        super.onOptionsItemSelected(item)
+
         when(item.itemId) {
             R.id.mnuCampaignListCreateNew -> {
                 val intent = Intent(this, CampaignCreate::class.java)
@@ -84,16 +123,9 @@ class MainActivity : CustomActivity() {
                 campaignRecyclerView.visibility = View.INVISIBLE
                 updateData()
             }
-
-            R.id.mnuSettings -> openSettings()
         }
 
         return true
-    }
-
-    override fun onResume() {
-        super.onResume()
-        updateData()
     }
 
     fun onCampaignSelected(campaign: Campaign) {
@@ -102,8 +134,18 @@ class MainActivity : CustomActivity() {
         startActivity(intent)
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        loader.visibility = View.VISIBLE
+        updateData()
+    }
+
     private fun updateData() {
-        questerService.listCampaigns().enqueue(object: Callback<List<Campaign>> {
+        if(questerService == null)
+            return
+
+        questerService!!.listCampaigns().enqueue(object: Callback<List<Campaign>> {
             override fun onResponse(call: Call<List<Campaign>>, response: Response<List<Campaign>>) {
                 when (response.code()) {
                     200 -> {
@@ -119,7 +161,7 @@ class MainActivity : CustomActivity() {
             }
 
             override fun onFailure(call: Call<List<Campaign>>, t: Throwable) {
-                throw t
+                ErrorHandler.handleErrors(this@MainActivity, t)
             }
         })
     }

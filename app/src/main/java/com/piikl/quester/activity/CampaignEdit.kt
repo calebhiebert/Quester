@@ -3,6 +3,7 @@ package com.piikl.quester.activity
 import android.os.Bundle
 import android.widget.Toast
 import com.piikl.quester.api.Campaign
+import com.piikl.quester.api.ErrorHandler
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -32,7 +33,7 @@ class CampaignEdit : CampaignCrud() {
         val c = Campaign()
         c.name = nameInput.text.toString().trim()
 
-        MainActivity.questerService.editCampaign(campaign.id, c).enqueue(object : Callback<Campaign> {
+        MainActivity.questerService!!.editCampaign(campaign.id, c).enqueue(object : Callback<Campaign> {
             override fun onResponse(call: Call<Campaign>?, response: Response<Campaign>) {
                 when(response.code()) {
                     200 -> {
@@ -44,7 +45,7 @@ class CampaignEdit : CampaignCrud() {
             }
 
             override fun onFailure(call: Call<Campaign>?, t: Throwable) {
-                throw t
+                ErrorHandler.handleErrors(this@CampaignEdit, t)
             }
         })
     }

@@ -4,10 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import com.piikl.quester.api.ErrorHandler
 import com.piikl.quester.api.Quest
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.net.SocketTimeoutException
 
 class QuestCreate : QuestCrud() {
 
@@ -44,9 +46,9 @@ class QuestCreate : QuestCrud() {
 
         newQuest.unlockMode = Quest.UnlockMode.ALL
 
-        MainActivity.questerService.createQuest(campaignId, newQuest).enqueue(object : Callback<Quest> {
+        MainActivity.questerService!!.createQuest(campaignId, newQuest).enqueue(object : Callback<Quest> {
             override fun onFailure(call: Call<Quest>?, t: Throwable) {
-                throw t
+                ErrorHandler.handleErrors(this@QuestCreate, t)
             }
 
             override fun onResponse(call: Call<Quest>?, response: Response<Quest>) {

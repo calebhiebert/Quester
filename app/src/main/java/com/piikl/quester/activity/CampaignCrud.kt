@@ -22,11 +22,13 @@ abstract class CampaignCrud : ValidatorActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.menu_create_campaign, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        super.onOptionsItemSelected(item)
 
         when(item.itemId) {
             R.id.mnuCreateCampaignSave -> validator.validate()

@@ -12,6 +12,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import com.piikl.quester.R
+import com.piikl.quester.api.ErrorHandler
 import com.piikl.quester.api.Quest
 import retrofit2.Call
 import retrofit2.Callback
@@ -52,19 +53,35 @@ class QuestView : CustomActivity() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.menu_quest_view, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
-            R.id.mnuSettings -> openSettings()
+        super.onOptionsItemSelected(item)
 
+        when(item.itemId) {
             R.id.mnuQuestViewEdit -> {
                 val intent = Intent(this, QuestEdit::class.java)
                 intent.putExtra("quest_json", MainActivity.mapper.writeValueAsString(quest))
                 startActivityForResult(intent, EDIT_QUEST)
+            }
+
+            R.id.mnuDeleteQuest -> {
+                MainActivity.questerService!!.deleteQuest(quest.id).enqueue(object : Callback<Quest> {
+                    override fun onFailure(call: Call<Quest>?, t: Throwable) {
+                        ErrorHandler.handleErrors(this@QuestView, t)
+                    }
+
+                    override fun onResponse(call: Call<Quest>?, response: Response<Quest>) {
+                        when(response.code()) {
+                            200, 404 -> { finish() }
+                            else -> Toast.makeText(this@QuestView, "Could not delete quest because of code ${response.code()}", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                })
             }
         }
 
@@ -103,9 +120,9 @@ class QuestView : CustomActivity() {
     }
 
     private fun loadData(id: Long) {
-        MainActivity.questerService.getQuest(id).enqueue(object : Callback<Quest> {
+        MainActivity.questerService!!.getQuest(id).enqueue(object : Callback<Quest> {
             override fun onFailure(call: Call<Quest>?, t: Throwable) {
-                Toast.makeText(applicationContext, "There was an error loading this quest $t", Toast.LENGTH_LONG).show()
+                ErrorHandler.handleErrors(this@QuestView, t)
             }
 
             override fun onResponse(call: Call<Quest>?, response: Response<Quest>) {

@@ -42,14 +42,16 @@ abstract class QuestCrud : ValidatorActivity() {
         rdoHidden = findViewById(R.id.rdoHidden)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.mnu_quest_crud, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        super.onOptionsItemSelected(item)
+
         when(item.itemId) {
-            R.id.mnuSettings -> openSettings()
             R.id.mnuSave -> validator.validate()
         }
 

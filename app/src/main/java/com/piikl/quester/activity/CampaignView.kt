@@ -14,6 +14,7 @@ import android.widget.Toast
 import com.piikl.quester.R
 import com.piikl.quester.adapter.QuestListAdapter
 import com.piikl.quester.api.Campaign
+import com.piikl.quester.api.ErrorHandler
 import com.piikl.quester.api.Quest
 import com.piikl.quester.setVisibility
 import retrofit2.Call
@@ -31,14 +32,13 @@ class CampaignView : CustomActivity() {
 
     lateinit var campaign: Campaign
 
-    private var loading = false
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_campaign_view)
 
         val id = intent.getLongExtra("campaign_id", 0)
         campaign = Campaign()
+        campaign.id = id
 
         if (id == 0L) {
             finish()
@@ -56,12 +56,11 @@ class CampaignView : CustomActivity() {
 
             setVisibility(View.INVISIBLE, titleView, creatorView, questListView, createQuest)
             setVisibility(View.VISIBLE, loadingWheel)
-
-            loadData(id)
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.menu_campaign_view, menu)
         return true
     }
@@ -72,10 +71,12 @@ class CampaignView : CustomActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        super.onOptionsItemSelected(item)
+
         when (item.itemId) {
             R.id.mnuCampaignViewDelete -> {
 
-                MainActivity.questerService.deleteCampaign(campaign.id.toString()).enqueue(object : Callback<Campaign> {
+                MainActivity.questerService!!.deleteCampaign(campaign.id.toString()).enqueue(object : Callback<Campaign> {
                     override fun onResponse(call: Call<Campaign>?, response: Response<Campaign>) {
                         if (response.code() == 200) {
                             finish()
@@ -102,8 +103,6 @@ class CampaignView : CustomActivity() {
 
                 loadData(campaign.id)
             }
-
-            R.id.mnuSettings -> openSettings()
         }
 
         return true
@@ -135,28 +134,21 @@ class CampaignView : CustomActivity() {
     }
 
     private fun loadData(id: Long) {
-        if(!loading) {
-            loading = true
+        MainActivity.questerService!!.getCampaign(id).enqueue(object : retrofit2.Callback<Campaign> {
+            override fun onResponse(call: Call<Campaign>, response: Response<Campaign>) {
+                when (response.code()) {
+                    200 -> onDataUpdated(response.body()!!)
+                    404 -> finish()
 
-            MainActivity.questerService.getCampaign(id).enqueue(object : retrofit2.Callback<Campaign> {
-                override fun onResponse(call: Call<Campaign>, response: Response<Campaign>) {
-                    loading = false
-
-                    when (response.code()) {
-                        200 -> onDataUpdated(response.body()!!)
-                        404 -> finish()
-
-                        else -> {
-                            Toast.makeText(this@CampaignView, "Got code ${response.code()} when loading campaign data", Toast.LENGTH_SHORT).show()
-                        }
+                    else -> {
+                        Toast.makeText(this@CampaignView, "Got code ${response.code()} when loading campaign data", Toast.LENGTH_SHORT).show()
                     }
                 }
+            }
 
-                override fun onFailure(call: Call<Campaign>, t: Throwable) {
-                    loading = false
-                    throw t
-                }
-            })
-        }
+            override fun onFailure(call: Call<Campaign>, t: Throwable) {
+                ErrorHandler.handleErrors(this@CampaignView, t)
+            }
+        })
     }
 }

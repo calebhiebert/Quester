@@ -8,11 +8,11 @@ interface QuesterService {
     @GET("/campaign")
     fun listCampaigns(): Call<List<Campaign>>
 
-    @GET("/quest")
-    fun listQuests(): Call<List<Quest>>
-
     @GET("/quest/{id}")
     fun getQuest(@Path("id") questId: Long): Call<Quest>
+
+    @DELETE("/quest/{id}")
+    fun deleteQuest(@Path("id") questId: Long) : Call<Quest>
 
     @GET("/campaign/{id}")
     fun getCampaign(@Path("id") campaignId: Long): Call<Campaign>
@@ -34,4 +34,7 @@ interface QuesterService {
 
     @GET
     fun searchUsers(@Query("name") search: String): Call<List<Campaign>>
+
+    @GET("/ping")
+    fun ping(): Call<Boolean>
 }

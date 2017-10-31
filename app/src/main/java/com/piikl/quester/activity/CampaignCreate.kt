@@ -3,6 +3,7 @@ package com.piikl.quester.activity
 import android.os.Bundle
 import android.widget.Toast
 import com.piikl.quester.api.Campaign
+import com.piikl.quester.api.ErrorHandler
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -18,9 +19,9 @@ class CampaignCreate : CampaignCrud() {
         val campaign = Campaign()
         campaign.name = nameInput.text.toString()
 
-        MainActivity.questerService.createCampaign(campaign).enqueue(object : Callback<Campaign> {
+        MainActivity.questerService!!.createCampaign(campaign).enqueue(object : Callback<Campaign> {
             override fun onFailure(call: Call<Campaign>?, t: Throwable) {
-                throw t
+                ErrorHandler.handleErrors(this@CampaignCreate, t)
             }
 
             override fun onResponse(call: Call<Campaign>?, response: Response<Campaign>) {

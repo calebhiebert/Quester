@@ -5,9 +5,12 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import com.piikl.quester.R
 import com.piikl.quester.activity.MainActivity
 import com.piikl.quester.api.ErrorHandler
@@ -28,19 +31,28 @@ class InviteUserFragment : Fragment() {
 
     private var campaignId: Long = 0
 
+    private lateinit var userSearchBox: EditText
+    private lateinit var usersDisplay: RecyclerView
+
     private var mListener: OnFragmentInteractionListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         if (arguments != null) {
             campaignId = arguments.getLong("campaign_id")
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        return inflater!!.inflate(R.layout.fragment_invite_user, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(R.layout.fragment_invite_user, container, false)
+
+        userSearchBox = view.findViewById(R.id.txtSearchUser)
+        usersDisplay = view.findViewById(R.id.recUserDisplay)
+
+        usersDisplay.layoutManager = LinearLayoutManager(context)
+
+        return view
     }
 
     fun doInvite(campaignId: Long, userId: Long) {

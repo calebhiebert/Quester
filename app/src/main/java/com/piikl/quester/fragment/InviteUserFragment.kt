@@ -3,19 +3,22 @@ package com.piikl.quester.fragment
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.support.design.widget.Snackbar
+import android.support.v4.app.DialogFragment
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.Toast
 import com.piikl.quester.R
 import com.piikl.quester.activity.MainActivity
 import com.piikl.quester.adapter.UserInviteAdapter
 import com.piikl.quester.api.ErrorHandler
-import com.piikl.quester.api.User
+import com.piikl.quester.api.SearchUser
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -28,12 +31,14 @@ import retrofit2.Response
  * Use the [InviteUserFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class InviteUserFragment : Fragment() {
+class InviteUserFragment : DialogFragment() {
 
     private var campaignId: Long = 0
 
     private lateinit var userSearchBox: EditText
     private lateinit var usersDisplay: RecyclerView
+
+    private lateinit var usersDisplayAdapter: UserInviteAdapter
 
     private var mListener: OnFragmentInteractionListener? = null
 
@@ -51,20 +56,37 @@ class InviteUserFragment : Fragment() {
         userSearchBox = view.findViewById(R.id.txtSearchUser)
         usersDisplay = view.findViewById(R.id.recUserDisplay)
 
+        usersDisplayAdapter = UserInviteAdapter(context, campaignId)
+
         usersDisplay.layoutManager = LinearLayoutManager(context)
-        usersDisplay.adapter = UserInviteAdapter(context, campaignId)
+        usersDisplay.adapter = usersDisplayAdapter
+
+        userSearchBox.addTextChangedListener(object : TextWatcher {
+
+            override fun afterTextChanged(p0: Editable?) { }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                searchUsers(p0 as String)
+            }
+        })
 
         return view
     }
 
-    fun doInvite(campaignId: Long, userId: Long) {
-        MainActivity.questerService!!.inviteUser(campaignId, userId).enqueue(object : Callback<User> {
-            override fun onResponse(call: Call<User>?, response: Response<User>) {
-                Snackbar.make(view!!, "Invited user ${response.body()?.name}", Snackbar.LENGTH_LONG).show()
-            }
+    fun searchUsers(query: String) {
+        MainActivity.questerService!!.searchUsers(query, campaignId).enqueue(object : Callback<List<SearchUser>> {
+            override fun onFailure(call: Call<List<SearchUser>>?, t: Throwable) { ErrorHandler.handleErrors(context, t) }
 
-            override fun onFailure(call: Call<User>?, t: Throwable) {
-                ErrorHandler.handleErrors(context, t)
+            override fun onResponse(call: Call<List<SearchUser>>?, response: Response<List<SearchUser>>) {
+                when (response.code()) {
+                    200 -> {
+                        usersDisplayAdapter.data = response.body()
+                    }
+
+                    else -> Toast.makeText(context, "searching users failed with code ${response.code()}", Toast.LENGTH_LONG).show()
+                }
             }
         })
     }

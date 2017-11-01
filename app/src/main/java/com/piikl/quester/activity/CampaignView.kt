@@ -74,9 +74,7 @@ class CampaignView : CustomActivity() {
         super.onOptionsItemSelected(item)
 
         when (item.itemId) {
-            R.id.mnuCampaignViewDelete -> {
-
-                MainActivity.questerService!!.deleteCampaign(campaign.id.toString()).enqueue(object : Callback<Campaign> {
+            R.id.mnuCampaignViewDelete -> MainActivity.questerService!!.deleteCampaign(campaign.id.toString()).enqueue(object : Callback<Campaign> {
                     override fun onResponse(call: Call<Campaign>?, response: Response<Campaign>) {
                         if (response.code() == 200) {
                             finish()
@@ -89,7 +87,6 @@ class CampaignView : CustomActivity() {
                         Toast.makeText(this@CampaignView, t.message, Toast.LENGTH_LONG).show()
                     }
                 })
-            }
 
             R.id.mnuCampaignViewEdit -> {
                 val intent = Intent(this, CampaignEdit::class.java)
@@ -102,6 +99,10 @@ class CampaignView : CustomActivity() {
                 setVisibility(View.VISIBLE, loadingWheel)
 
                 loadData(campaign.id)
+            }
+
+            R.id.mnuAddUsers -> {
+                TODO()
             }
         }
 

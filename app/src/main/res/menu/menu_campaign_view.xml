@@ -17,4 +17,7 @@
         android:icon="@drawable/ic_trash"
         android:title="@string/remove_campaign"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/mnuAddUsers"
+        android:title="Invite Users" />
 </menu>

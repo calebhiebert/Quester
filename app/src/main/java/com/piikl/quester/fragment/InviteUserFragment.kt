@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import com.piikl.quester.R
 import com.piikl.quester.activity.MainActivity
+import com.piikl.quester.adapter.UserInviteAdapter
 import com.piikl.quester.api.ErrorHandler
 import com.piikl.quester.api.User
 import retrofit2.Call
@@ -51,6 +52,7 @@ class InviteUserFragment : Fragment() {
         usersDisplay = view.findViewById(R.id.recUserDisplay)
 
         usersDisplay.layoutManager = LinearLayoutManager(context)
+        usersDisplay.adapter = UserInviteAdapter(context, campaignId)
 
         return view
     }

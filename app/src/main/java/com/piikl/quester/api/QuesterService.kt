@@ -36,7 +36,7 @@ interface QuesterService {
     fun inviteUser(@Path("c_id") campaignId: Long, @Path("u_id") userId: Long): Call<User>
 
     @GET("/user/search")
-    fun searchUsers(@Query("name") search: String): Call<List<Campaign>>
+    fun searchUsers(@Query("name") search: String, @Query("campaign_id") campaignId: Long): Call<List<SearchUser>>
 
     @GET("/ping")
     fun ping(): Call<Boolean>

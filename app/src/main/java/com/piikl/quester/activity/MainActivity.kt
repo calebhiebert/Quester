@@ -36,16 +36,18 @@ class MainActivity : CustomActivity() {
 
         val mapper = ObjectMapper()
 
-        fun createApiClient(url: String, username: String, password: String) {
-            val client = OkHttpClient.Builder()
-                    .addInterceptor(AuthInterceptor(username, password))
-                    .build()
+        fun createApiClient(url: String?, username: String, password: String) {
+            if (url != null) {
+                val client = OkHttpClient.Builder()
+                        .addInterceptor(AuthInterceptor(username, password))
+                        .build()
 
-            questerService = Retrofit.Builder()
-                    .client(client)
-                    .baseUrl(url)
-                    .addConverterFactory(JacksonConverterFactory.create())
-                    .build().create(QuesterService::class.java)
+                questerService = Retrofit.Builder()
+                        .client(client)
+                        .baseUrl(url)
+                        .addConverterFactory(JacksonConverterFactory.create())
+                        .build().create(QuesterService::class.java)
+            }
         }
     }
 
@@ -67,9 +69,10 @@ class MainActivity : CustomActivity() {
         createApi(prefs)
 
         prefs.registerOnSharedPreferenceChangeListener({ pref, value ->
-            when(value) {
+            when (value) {
                 "api_url" -> {
-                    createApiClient(pref.getString("api_url", null), pref.getString("username", null), pref.getString("password", null))
+                    if(pref.getString("username", null) != null && pref.getString("password", null) != null)
+                        createApiClient(pref.getString("api_url", null), pref.getString("username", null), pref.getString("password", null))
                 }
             }
         })
@@ -78,7 +81,7 @@ class MainActivity : CustomActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
 
-        if(questerService != null) {
+        if (questerService != null) {
             val item = menu.add(Menu.NONE, Menu.NONE, Menu.NONE, R.string.log_out)
             item.setOnMenuItemClickListener {
                 val prefs = PreferenceManager.getDefaultSharedPreferences(this)
@@ -98,7 +101,7 @@ class MainActivity : CustomActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         super.onOptionsItemSelected(item)
 
-        when(item.itemId) {
+        when (item.itemId) {
             R.id.mnuCampaignListCreateNew -> {
                 val intent = Intent(this, CampaignCreate::class.java)
                 startActivity(intent)
@@ -123,7 +126,7 @@ class MainActivity : CustomActivity() {
     override fun onResume() {
         super.onResume()
 
-        if(questerService == null) {
+        if (questerService == null) {
             createApi(PreferenceManager.getDefaultSharedPreferences(this))
         }
 
@@ -132,17 +135,29 @@ class MainActivity : CustomActivity() {
     }
 
     fun createApi(prefs: SharedPreferences) {
-        val apiUrl: String? = try { prefs.getString("api_url", null) } catch (e: Exception) { e.printStackTrace(); null }
-        val username: String? = try { prefs.getString("username", null) } catch (e: Exception) { e.printStackTrace(); null }
-        val password: String? = try { prefs.getString("password", null) } catch (e: Exception) { e.printStackTrace(); null }
+        val apiUrl: String? = try {
+            prefs.getString("api_url", null)
+        } catch (e: Exception) {
+            e.printStackTrace(); null
+        }
+        val username: String? = try {
+            prefs.getString("username", null)
+        } catch (e: Exception) {
+            e.printStackTrace(); null
+        }
+        val password: String? = try {
+            prefs.getString("password", null)
+        } catch (e: Exception) {
+            e.printStackTrace(); null
+        }
 
-        if(password.isNullOrEmpty() || username.isNullOrEmpty()) {
+        if (password.isNullOrEmpty() || username.isNullOrEmpty()) {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             return
         }
 
-        if(apiUrl.isNullOrEmpty()) {
+        if (apiUrl.isNullOrEmpty()) {
             Toast.makeText(this, "Api url is not set", Toast.LENGTH_LONG).show()
             return
         }
@@ -151,10 +166,10 @@ class MainActivity : CustomActivity() {
     }
 
     private fun updateData() {
-        if(questerService == null)
+        if (questerService == null)
             return
 
-        questerService!!.listCampaigns().enqueue(object: Callback<List<Campaign>> {
+        questerService!!.listCampaigns().enqueue(object : Callback<List<Campaign>> {
             override fun onResponse(call: Call<List<Campaign>>, response: Response<List<Campaign>>) {
                 when (response.code()) {
                     200 -> {

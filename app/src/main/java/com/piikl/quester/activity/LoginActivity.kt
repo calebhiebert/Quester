@@ -58,32 +58,36 @@ class LoginActivity : CustomActivity(), Validator.ValidationListener {
 
         MainActivity.createApiClient(prefs.getString("api_url", null), uname, pword)
 
-        MainActivity.questerService!!.ping().enqueue(object : Callback<Boolean> {
-            override fun onFailure(call: Call<Boolean>?, t: Throwable) {
-                ErrorHandler.handleErrors(this@LoginActivity, t)
-            }
+        if(MainActivity.questerService != null) {
+            MainActivity.questerService!!.ping().enqueue(object : Callback<Boolean> {
+                override fun onFailure(call: Call<Boolean>?, t: Throwable) {
+                    ErrorHandler.handleErrors(this@LoginActivity, t)
+                }
 
-            override fun onResponse(call: Call<Boolean>?, response: Response<Boolean>) {
-                when (response.code()) {
-                    200 -> {
-                        val edit = prefs.edit()
-                        edit.putString("username", uname)
-                        edit.putString("password", pword)
-                        edit.commit()
-                        finish()
-                    }
+                override fun onResponse(call: Call<Boolean>?, response: Response<Boolean>) {
+                    when (response.code()) {
+                        200 -> {
+                            val edit = prefs.edit()
+                            edit.putString("username", uname)
+                            edit.putString("password", pword)
+                            edit.commit()
+                            finish()
+                        }
 
-                    401 -> {
-                        username.error = "Incorrect username or password"
-                        password.error = "Incorrect username or password"
-                    }
+                        401 -> {
+                            username.error = "Incorrect username or password"
+                            password.error = "Incorrect username or password"
+                        }
 
-                    else -> {
-                        Toast.makeText(this@LoginActivity, "Login failed with code ${response.code()}", Toast.LENGTH_LONG).show()
+                        else -> {
+                            Toast.makeText(this@LoginActivity, "Login failed with code ${response.code()}", Toast.LENGTH_LONG).show()
+                        }
                     }
                 }
-            }
-        })
+            })
+        } else {
+            Toast.makeText(this, "Please set an api url in the settings", Toast.LENGTH_LONG).show()
+        }
     }
 
     override fun onValidationFailed(errors: MutableList<ValidationError>?) {

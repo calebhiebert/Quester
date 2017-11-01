@@ -1,5 +1,7 @@
 package com.piikl.quester.activity
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.widget.Button
@@ -13,9 +15,10 @@ import com.piikl.quester.api.ErrorHandler
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.net.SocketTimeoutException
 
 class LoginActivity : CustomActivity(), Validator.ValidationListener {
+
+    private val REGISTER = 1
 
     @Length(min = 3, max = 255, trim = true)
     lateinit var username: EditText
@@ -24,6 +27,7 @@ class LoginActivity : CustomActivity(), Validator.ValidationListener {
     lateinit var password: EditText
 
     lateinit var loginButton: Button
+    lateinit var registerButton: Button
 
     private val validator = Validator(this)
 
@@ -34,11 +38,17 @@ class LoginActivity : CustomActivity(), Validator.ValidationListener {
         username = findViewById(R.id.txtUsername)
         password = findViewById(R.id.txtPassword)
         loginButton = findViewById(R.id.btnLogIn)
+        registerButton = findViewById(R.id.btnRegister)
         validator.setValidationListener(this)
 
         loginButton.setOnClickListener({
             validator.validate()
         })
+
+        registerButton.setOnClickListener {
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivityForResult(intent, REGISTER)
+        }
     }
 
     private fun login() {
@@ -83,5 +93,15 @@ class LoginActivity : CustomActivity(), Validator.ValidationListener {
 
     override fun onValidationSucceeded() {
         login()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if(requestCode == REGISTER) {
+            if(resultCode == Activity.RESULT_OK) {
+                finish()
+            }
+        }
     }
 }

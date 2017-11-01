@@ -13,7 +13,6 @@ import com.piikl.quester.R
 import com.piikl.quester.activity.MainActivity
 import com.piikl.quester.api.ErrorHandler
 import com.piikl.quester.api.SearchUser
-import com.piikl.quester.api.User
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -23,27 +22,29 @@ class UserInviteAdapter(private val ctx: Context, val campaignId: Long) : Recycl
     class ViewHolder(itemView: View, val ctx: Context, val campaignId: Long) : RecyclerView.ViewHolder(itemView) {
         val nameView: TextView = itemView.findViewById(R.id.txtNameView)
         val loader: ProgressBar = itemView.findViewById(R.id.ldgLoader)
-        val check: CheckBox = itemView.findViewById(R.id.checkbox)
+        val check: CheckBox = itemView.findViewById(R.id.chkInviteCheckbox)
 
         fun bind(user: SearchUser) {
             nameView.text = user.name
             loader.visibility = View.INVISIBLE
             check.isChecked = user.isPartOfCampaign!!
+            if(check.isChecked) check.isEnabled = false
 
             check.setOnClickListener {
                 loader.visibility = View.VISIBLE
                 check.visibility = View.INVISIBLE
 
                 if(check.isChecked) {
-                    MainActivity.questerService!!.inviteUser(campaignId, user.id).enqueue(object : Callback<User> {
-                        override fun onFailure(call: Call<User>?, t: Throwable) {
+                    MainActivity.questerService!!.inviteUser(campaignId, user.id).enqueue(object : Callback<SearchUser> {
+                        override fun onFailure(call: Call<SearchUser>?, t: Throwable) {
                             ErrorHandler.handleErrors(ctx, t)
                         }
 
-                        override fun onResponse(call: Call<User>?, response: Response<User>) {
+                        override fun onResponse(call: Call<SearchUser>?, response: Response<SearchUser>) {
                             when (response.code()) {
                                 200 -> {
                                     check.isChecked = true
+                                    check.isEnabled = false
                                     check.visibility = View.VISIBLE
                                     loader.visibility = View.INVISIBLE
                                 }
@@ -58,7 +59,7 @@ class UserInviteAdapter(private val ctx: Context, val campaignId: Long) : Recycl
     }
 
     var data: List<SearchUser>? = null
-    set(value) { field = value; notifyDataSetChanged() }
+        set(value) { field = value; notifyDataSetChanged() }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val v = LayoutInflater.from(parent.context).inflate(R.layout.view_user_invite_list_item, parent, false)

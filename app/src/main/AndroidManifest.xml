@@ -25,7 +25,8 @@
         <activity android:name=".activity.LoginActivity" />
         <activity android:name=".activity.PrefsActivity" />
         <activity android:name=".activity.QuestEdit" />
-        <activity android:name=".activity.QuestCreate"></activity>
+        <activity android:name=".activity.QuestCreate" />
+        <activity android:name=".activity.RegisterActivity"></activity>
     </application>
 
 </manifest>

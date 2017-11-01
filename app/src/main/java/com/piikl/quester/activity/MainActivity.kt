@@ -1,6 +1,7 @@
 package com.piikl.quester.activity
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v7.widget.LinearLayoutManager
@@ -63,22 +64,7 @@ class MainActivity : CustomActivity() {
 
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
-        val apiUrl: String? = try { prefs.getString("api_url", null) } catch (e: Exception) { e.printStackTrace(); null }
-        val username: String? = try { prefs.getString("username", null) } catch (e: Exception) { e.printStackTrace(); null }
-        val password: String? = try { prefs.getString("password", null) } catch (e: Exception) { e.printStackTrace(); null }
-
-        if(password.isNullOrEmpty() || username.isNullOrEmpty()) {
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-            return
-        }
-
-        if(apiUrl.isNullOrEmpty()) {
-            Toast.makeText(this, "Api url is not set", Toast.LENGTH_LONG).show()
-            return
-        }
-
-        createApiClient(apiUrl!!, username!!, password!!)
+        createApi(prefs)
 
         prefs.registerOnSharedPreferenceChangeListener({ pref, value ->
             when(value) {
@@ -137,8 +123,31 @@ class MainActivity : CustomActivity() {
     override fun onResume() {
         super.onResume()
 
+        if(questerService == null) {
+            createApi(PreferenceManager.getDefaultSharedPreferences(this))
+        }
+
         loader.visibility = View.VISIBLE
         updateData()
+    }
+
+    fun createApi(prefs: SharedPreferences) {
+        val apiUrl: String? = try { prefs.getString("api_url", null) } catch (e: Exception) { e.printStackTrace(); null }
+        val username: String? = try { prefs.getString("username", null) } catch (e: Exception) { e.printStackTrace(); null }
+        val password: String? = try { prefs.getString("password", null) } catch (e: Exception) { e.printStackTrace(); null }
+
+        if(password.isNullOrEmpty() || username.isNullOrEmpty()) {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            return
+        }
+
+        if(apiUrl.isNullOrEmpty()) {
+            Toast.makeText(this, "Api url is not set", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        createApiClient(apiUrl!!, username!!, password!!)
     }
 
     private fun updateData() {

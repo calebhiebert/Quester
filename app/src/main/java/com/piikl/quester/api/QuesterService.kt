@@ -33,10 +33,13 @@ interface QuesterService {
     fun deleteCampaign(@Path("id") campaignId: String): Call<Campaign>
 
     @POST("/campaign/{c_id}/invite/{u_id}")
-    fun inviteUser(@Path("c_id") campaignId: Long, @Path("u_id") userId: Long): Call<User>
+    fun inviteUser(@Path("c_id") campaignId: Long, @Path("u_id") userId: Long): Call<SearchUser>
 
     @GET("/user/search")
     fun searchUsers(@Query("name") search: String, @Query("campaign_id") campaignId: Long): Call<List<SearchUser>>
+
+    @POST("/register")
+    fun register(@Body user: User): Call<User>
 
     @GET("/ping")
     fun ping(): Call<Boolean>

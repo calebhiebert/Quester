@@ -1,6 +1,7 @@
 package com.piikl.quester.activity
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.LinearLayoutManager
@@ -16,12 +17,13 @@ import com.piikl.quester.adapter.QuestListAdapter
 import com.piikl.quester.api.Campaign
 import com.piikl.quester.api.ErrorHandler
 import com.piikl.quester.api.Quest
+import com.piikl.quester.fragment.InviteUserFragment
 import com.piikl.quester.setVisibility
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class CampaignView : CustomActivity() {
+class CampaignView : CustomActivity(), InviteUserFragment.OnFragmentInteractionListener {
 
     private lateinit var titleView: TextView
     private lateinit var creatorView: TextView
@@ -102,7 +104,16 @@ class CampaignView : CustomActivity() {
             }
 
             R.id.mnuAddUsers -> {
-                TODO()
+                val transaction: android.support.v4.app.FragmentTransaction = supportFragmentManager.beginTransaction()
+                val prev = supportFragmentManager.findFragmentByTag("dialog")
+
+                if(prev != null)
+                    transaction.remove(prev)
+
+                transaction.addToBackStack(null)
+
+                val newFrag = InviteUserFragment.newInstance(campaign.id)
+                newFrag.show(transaction, "dialog")
             }
         }
 
@@ -133,6 +144,8 @@ class CampaignView : CustomActivity() {
 
         startActivity(intent)
     }
+
+    override fun onFragmentInteraction(uri: Uri) { }
 
     private fun loadData(id: Long) {
         MainActivity.questerService!!.getCampaign(id).enqueue(object : retrofit2.Callback<Campaign> {

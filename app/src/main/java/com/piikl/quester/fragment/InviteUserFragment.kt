@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ProgressBar
 import android.widget.Toast
 import com.piikl.quester.R
 import com.piikl.quester.activity.MainActivity
@@ -37,6 +38,7 @@ class InviteUserFragment : DialogFragment() {
 
     private lateinit var userSearchBox: EditText
     private lateinit var usersDisplay: RecyclerView
+    private lateinit var loader: ProgressBar
 
     private lateinit var usersDisplayAdapter: UserInviteAdapter
 
@@ -48,6 +50,8 @@ class InviteUserFragment : DialogFragment() {
         if (arguments != null) {
             campaignId = arguments.getLong("campaign_id")
         }
+
+        setStyle(DialogFragment.STYLE_NORMAL, 0)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -55,6 +59,7 @@ class InviteUserFragment : DialogFragment() {
 
         userSearchBox = view.findViewById(R.id.txtSearchUser)
         usersDisplay = view.findViewById(R.id.recUserDisplay)
+        loader = view.findViewById(R.id.ldgLoader)
 
         usersDisplayAdapter = UserInviteAdapter(context, campaignId)
 
@@ -62,20 +67,22 @@ class InviteUserFragment : DialogFragment() {
         usersDisplay.adapter = usersDisplayAdapter
 
         userSearchBox.addTextChangedListener(object : TextWatcher {
-
-            override fun afterTextChanged(p0: Editable?) { }
+            override fun afterTextChanged(p0: Editable?) {
+                searchUsers(userSearchBox.text.toString())
+            }
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                searchUsers(p0 as String)
-            }
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
         })
 
         return view
     }
 
     fun searchUsers(query: String) {
+        loader.visibility = View.VISIBLE
+        usersDisplay.visibility = View.INVISIBLE
+
         MainActivity.questerService!!.searchUsers(query, campaignId).enqueue(object : Callback<List<SearchUser>> {
             override fun onFailure(call: Call<List<SearchUser>>?, t: Throwable) { ErrorHandler.handleErrors(context, t) }
 
@@ -83,6 +90,8 @@ class InviteUserFragment : DialogFragment() {
                 when (response.code()) {
                     200 -> {
                         usersDisplayAdapter.data = response.body()
+                        usersDisplay.visibility = View.VISIBLE
+                        loader.visibility = View.INVISIBLE
                     }
 
                     else -> Toast.makeText(context, "searching users failed with code ${response.code()}", Toast.LENGTH_LONG).show()

@@ -3,6 +3,7 @@ package com.piikl.quester.activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -18,6 +19,7 @@ import com.piikl.quester.api.Campaign
 import com.piikl.quester.api.ErrorHandler
 import com.piikl.quester.api.Quest
 import com.piikl.quester.fragment.InviteUserFragment
+import com.piikl.quester.setMenuVisibility
 import com.piikl.quester.setVisibility
 import retrofit2.Call
 import retrofit2.Callback
@@ -65,6 +67,22 @@ class CampaignView : CustomActivity(), InviteUserFragment.OnFragmentInteractionL
         super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.menu_campaign_view, menu)
         return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        if(campaignIsMine()) {
+            setMenuVisibility(true, menu,
+                    R.id.mnuCampaignViewEdit,
+                    R.id.mnuCampaignViewDelete,
+                    R.id.mnuAddUsers)
+        } else {
+            setMenuVisibility(false, menu,
+                    R.id.mnuCampaignViewEdit,
+                    R.id.mnuCampaignViewDelete,
+                    R.id.mnuAddUsers)
+        }
+
+        return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onResume() {
@@ -136,9 +154,13 @@ class CampaignView : CustomActivity(), InviteUserFragment.OnFragmentInteractionL
         loadingWheel.visibility = View.GONE
 
         questListAdapter.questList = campaign.quests
+
+        invalidateOptionsMenu()
     }
 
     fun onQuestSelected(quest: Quest) {
+        quest.campaign = campaign
+
         val intent = Intent(this, QuestView::class.java)
         intent.putExtra("quest_json", MainActivity.mapper.writeValueAsString(quest))
 
@@ -164,5 +186,15 @@ class CampaignView : CustomActivity(), InviteUserFragment.OnFragmentInteractionL
                 ErrorHandler.handleErrors(this@CampaignView, t)
             }
         })
+    }
+
+    private fun campaignIsMine(): Boolean {
+        if(campaign.creator != null) {
+            val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+            val creator = campaign.creator!!
+            return creator.name == prefs.getString("username", null)
+        } else {
+            return false
+        }
     }
 }

@@ -85,7 +85,7 @@ class MainActivity : CustomActivity() {
                 val edit = prefs.edit()
                 edit.remove("username")
                 edit.remove("password")
-                edit.apply()
+                edit.commit()
                 recreate()
                 true
             }

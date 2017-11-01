@@ -3,6 +3,7 @@ package com.piikl.quester.activity
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -14,6 +15,7 @@ import android.widget.Toast
 import com.piikl.quester.R
 import com.piikl.quester.api.ErrorHandler
 import com.piikl.quester.api.Quest
+import com.piikl.quester.setMenuVisibility
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -57,6 +59,20 @@ class QuestView : CustomActivity() {
         super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.menu_quest_view, menu)
         return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        if(questIsMine()) {
+            setMenuVisibility(true, menu,
+                    R.id.mnuQuestViewEdit,
+                    R.id.mnuDeleteQuest)
+        } else {
+            setMenuVisibility(false, menu,
+                    R.id.mnuQuestViewEdit,
+                    R.id.mnuDeleteQuest)
+        }
+
+        return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -117,6 +133,8 @@ class QuestView : CustomActivity() {
         } else {
             questIcon.visibility = View.GONE
         }
+
+        invalidateOptionsMenu()
     }
 
     private fun loadData(id: Long) {
@@ -131,5 +149,15 @@ class QuestView : CustomActivity() {
                 }
             }
         })
+    }
+
+    private fun questIsMine(): Boolean {
+        return if(quest.campaign != null && quest.campaign!!.creator != null) {
+            val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+            val creator = quest.campaign!!.creator!!
+            creator.name == prefs.getString("username", null)
+        } else {
+            false
+        }
     }
 }

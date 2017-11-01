@@ -155,6 +155,11 @@ class CampaignView : CustomActivity(), InviteUserFragment.OnFragmentInteractionL
 
         questListAdapter.questList = campaign.quests
 
+        if(campaignIsMine())
+            createQuest.visibility = View.VISIBLE
+        else
+            createQuest.visibility = View.GONE
+
         invalidateOptionsMenu()
     }
 

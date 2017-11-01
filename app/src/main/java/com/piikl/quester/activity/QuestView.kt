@@ -8,10 +8,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import com.piikl.quester.R
 import com.piikl.quester.api.ErrorHandler
 import com.piikl.quester.api.Quest
@@ -28,6 +25,10 @@ class QuestView : CustomActivity() {
     lateinit var details: TextView
     lateinit var loader: ProgressBar
     lateinit var questIcon: ImageView
+    lateinit var locationObtained: TextView
+    lateinit var questGiver: TextView
+    lateinit var questGiverLayout: LinearLayout
+    lateinit var locationObtainedLayout: LinearLayout
 
     private lateinit var quest: Quest
 
@@ -39,6 +40,10 @@ class QuestView : CustomActivity() {
         details = findViewById(R.id.txtQuestViewDetailView)
         loader = findViewById(R.id.ldgQuestViewLoader)
         questIcon = findViewById(R.id.imgQuestViewQuestIcon)
+        locationObtained = findViewById(R.id.txtLocationObtained)
+        questGiver = findViewById(R.id.txtQuestGiver)
+        questGiverLayout = findViewById(R.id.lltQuestGiver)
+        locationObtainedLayout = findViewById(R.id.lltLocationObtained)
 
         title.visibility = View.INVISIBLE
         details.visibility = View.INVISIBLE
@@ -133,6 +138,16 @@ class QuestView : CustomActivity() {
         } else {
             questIcon.visibility = View.GONE
         }
+        
+        if(quest.questGiver != null) {
+            questGiverLayout.visibility = View.VISIBLE
+            questGiver.text = quest.questGiver
+        } else questGiverLayout.visibility = View.GONE
+
+        if(quest.locationObtained != null) {
+            locationObtainedLayout.visibility = View.VISIBLE
+            locationObtained.text = quest.locationObtained
+        } else locationObtainedLayout.visibility = View.GONE
 
         invalidateOptionsMenu()
     }

@@ -25,7 +25,57 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/lltLocationObtained"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txtQuestViewQuestTitle">
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/ic_map_marker" />
+
+                <TextView
+                    android:id="@+id/txtLocationObtained"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Canadia" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/lltQuestGiver"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lltLocationObtained">
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/ic_user" />
+
+                <TextView
+                    android:id="@+id/txtQuestGiver"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Canadia" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/txtQuestViewQuestTitle"
@@ -35,7 +85,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="Example Quest with a very long name that is so long"
+                android:text="Not Ver Long Quest"
                 android:textAppearance="@android:style/TextAppearance.Material.Large"
                 app:layout_constraintEnd_toStartOf="@+id/imgQuestViewQuestIcon"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -46,16 +96,19 @@
                 android:id="@+id/txtQuestViewDetailView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed iaculis mollis purus vitae convallis. Suspendisse auctor commodo odio, sed lacinia risus sollicitudin id. Mauris mattis, eros at lobortis sodales, diam erat convallis purus, at auctor turpis nulla ultrices risus. Pellentesque hendrerit sem vitae placerat accumsan. Duis sapien eros, eleifend non congue id, euismod sit amet quam. Aliquam fringilla odio mi, id posuere massa elementum ut. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aliquam eget tristique tellus. In a neque molestie, fermentum arcu aliquet, sagittis sem. Mauris vel efficitur felis. Aenean tempor lectus leo, ac ornare lorem posuere a. Suspendisse interdum tempor vulputate. Vestibulum efficitur laoreet dui, nec scelerisque libero volutpat vel. Donec id libero vitae felis iaculis dapibus. Praesent venenatis quam sapien, vel vestibulum libero luctus sit amet. Donec sed lobortis elit."
+                android:text="fstlufse"
                 android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txtQuestViewQuestTitle" />
+                app:layout_constraintTop_toBottomOf="@+id/lltQuestGiver" />
 
             <ImageView
                 android:id="@+id/imgQuestViewQuestIcon"

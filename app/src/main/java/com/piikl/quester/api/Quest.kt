@@ -20,7 +20,7 @@ class Quest() {
 
     var status: Status? = null
 
-    var unlocks: Quest? = null
+    var unlocks: List<Quest>? = null
 
     var locationObtained: String? = null
 
@@ -36,7 +36,11 @@ class Quest() {
     }
 
     enum class UnlockMode {
-        ALL, ANY
+        ALL, ANY;
+
+        override fun toString(): String {
+            return super.toString().toLowerCase()
+        }
     }
 
     @JsonIgnore

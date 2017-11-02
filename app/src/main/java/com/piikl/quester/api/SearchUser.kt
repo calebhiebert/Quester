@@ -9,5 +9,7 @@ class SearchUser {
 
     var isPartOfCampaign: Boolean? = null
 
+    var isOwnerOfCampaign: Boolean? = null
+
     var campaigns: List<Campaign>? = null
 }

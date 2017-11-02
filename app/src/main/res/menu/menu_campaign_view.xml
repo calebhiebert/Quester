@@ -19,5 +19,5 @@
         app:showAsAction="never" />
     <item
         android:id="@+id/mnuAddUsers"
-        android:title="Invite Users" />
+        android:title="@string/manage_users" />
 </menu>

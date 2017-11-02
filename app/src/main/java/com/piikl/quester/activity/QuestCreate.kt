@@ -9,7 +9,6 @@ import com.piikl.quester.api.Quest
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.net.SocketTimeoutException
 
 class QuestCreate : QuestCrud() {
 
@@ -44,7 +43,7 @@ class QuestCreate : QuestCrud() {
             else -> Quest.Status.INCOMPLETE
         }
 
-        newQuest.unlockMode = Quest.UnlockMode.ALL
+        newQuest.unlockMode = unlockModeInput.selectedItem as Quest.UnlockMode
 
         MainActivity.questerService!!.createQuest(campaignId, newQuest).enqueue(object : Callback<Quest> {
             override fun onFailure(call: Call<Quest>?, t: Throwable) {

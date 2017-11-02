@@ -3,11 +3,14 @@ package com.piikl.quester.activity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.RadioButton
+import android.widget.Spinner
 import com.mobsandgeeks.saripaar.annotation.Length
 import com.mobsandgeeks.saripaar.annotation.NotEmpty
 import com.piikl.quester.R
+import com.piikl.quester.api.Quest
 
 abstract class QuestCrud : ValidatorActivity() {
 
@@ -25,6 +28,8 @@ abstract class QuestCrud : ValidatorActivity() {
     @Length(min = 0, max = 255, trim = true)
     protected lateinit var questGiverInput: EditText
 
+    protected lateinit var unlockModeInput: Spinner
+
     protected lateinit var rdoAvailable: RadioButton
     protected lateinit var rdoLocked: RadioButton
     protected lateinit var rdoHidden: RadioButton
@@ -40,6 +45,9 @@ abstract class QuestCrud : ValidatorActivity() {
         rdoAvailable = findViewById(R.id.rdoAvailable)
         rdoLocked = findViewById(R.id.rdoLocked)
         rdoHidden = findViewById(R.id.rdoHidden)
+        unlockModeInput = findViewById(R.id.spnUnlockMode)
+
+        unlockModeInput.adapter = ArrayAdapter<Quest.UnlockMode>(this, android.R.layout.simple_spinner_dropdown_item, Quest.UnlockMode.values())
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -44,6 +44,8 @@ class InviteUserFragment : DialogFragment() {
 
     private var mListener: OnFragmentInteractionListener? = null
 
+    private var searchCall: Call<List<SearchUser>>? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -76,6 +78,8 @@ class InviteUserFragment : DialogFragment() {
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
         })
 
+        searchUsers("")
+
         return view
     }
 
@@ -83,7 +87,12 @@ class InviteUserFragment : DialogFragment() {
         loader.visibility = View.VISIBLE
         usersDisplay.visibility = View.INVISIBLE
 
-        MainActivity.questerService!!.searchUsers(query, campaignId).enqueue(object : Callback<List<SearchUser>> {
+        if(searchCall != null)
+            searchCall!!.cancel()
+
+        searchCall = MainActivity.questerService!!.searchUsers(query, campaignId)
+
+        searchCall!!.enqueue(object : Callback<List<SearchUser>> {
             override fun onFailure(call: Call<List<SearchUser>>?, t: Throwable) { ErrorHandler.handleErrors(context, t) }
 
             override fun onResponse(call: Call<List<SearchUser>>?, response: Response<List<SearchUser>>) {

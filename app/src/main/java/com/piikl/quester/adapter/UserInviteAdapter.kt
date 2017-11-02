@@ -28,7 +28,7 @@ class UserInviteAdapter(private val ctx: Context, val campaignId: Long) : Recycl
             nameView.text = user.name
             loader.visibility = View.INVISIBLE
             check.isChecked = user.isPartOfCampaign!!
-            if(check.isChecked) check.isEnabled = false
+            check.isEnabled = !user.isOwnerOfCampaign!!
 
             check.setOnClickListener {
                 loader.visibility = View.VISIBLE
@@ -43,8 +43,25 @@ class UserInviteAdapter(private val ctx: Context, val campaignId: Long) : Recycl
                         override fun onResponse(call: Call<SearchUser>?, response: Response<SearchUser>) {
                             when (response.code()) {
                                 200 -> {
-                                    check.isChecked = true
-                                    check.isEnabled = false
+                                    check.isChecked = response.body()!!.isPartOfCampaign!!
+                                    check.visibility = View.VISIBLE
+                                    loader.visibility = View.INVISIBLE
+                                }
+
+                                else -> Toast.makeText(ctx, "Sending invite failed with code ${response.code()}", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    })
+                } else {
+                    MainActivity.questerService!!.uninviteUser(campaignId, user.id).enqueue(object : Callback<SearchUser> {
+                        override fun onFailure(call: Call<SearchUser>?, t: Throwable) {
+                            ErrorHandler.handleErrors(ctx, t)
+                        }
+
+                        override fun onResponse(call: Call<SearchUser>?, response: Response<SearchUser>) {
+                            when (response.code()) {
+                                200 -> {
+                                    check.isChecked = response.body()!!.isPartOfCampaign!!
                                     check.visibility = View.VISIBLE
                                     loader.visibility = View.INVISIBLE
                                 }

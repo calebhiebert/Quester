@@ -9,7 +9,6 @@ import com.piikl.quester.api.Quest
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.net.SocketTimeoutException
 
 class QuestEdit : QuestCrud() {
 
@@ -25,6 +24,8 @@ class QuestEdit : QuestCrud() {
         detailsInput.setText(quest.details)
         locationObtainedInput.setText(quest.locationObtained)
         questGiverInput.setText(quest.questGiver)
+
+        unlockModeInput.setSelection(quest.unlockMode!!.ordinal)
 
         when(quest.status) {
             Quest.Status.LOCKED -> rdoLocked.isChecked = true
@@ -52,6 +53,8 @@ class QuestEdit : QuestCrud() {
             rdoAvailable.isChecked && quest.status != Quest.Status.LOCKED && quest.status != Quest.Status.HIDDEN -> quest.status
             else -> Quest.Status.INCOMPLETE
         }
+
+        newQuest.unlockMode = unlockModeInput.selectedItem as Quest.UnlockMode
 
         MainActivity.questerService!!.editQuest(quest.id, newQuest).enqueue(object : Callback<Quest> {
             override fun onFailure(call: Call<Quest>?, t: Throwable) {

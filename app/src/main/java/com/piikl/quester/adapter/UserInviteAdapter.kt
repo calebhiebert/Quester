@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
 import com.piikl.quester.R
 import com.piikl.quester.activity.MainActivity
 import com.piikl.quester.api.ErrorHandler
@@ -48,7 +47,7 @@ class UserInviteAdapter(private val ctx: Context, val campaignId: Long) : Recycl
                                     loader.visibility = View.INVISIBLE
                                 }
 
-                                else -> Toast.makeText(ctx, "Sending invite failed with code ${response.code()}", Toast.LENGTH_LONG).show()
+                                else -> ErrorHandler.handleErrors(ctx, response.errorBody()!!)
                             }
                         }
                     })
@@ -66,7 +65,7 @@ class UserInviteAdapter(private val ctx: Context, val campaignId: Long) : Recycl
                                     loader.visibility = View.INVISIBLE
                                 }
 
-                                else -> Toast.makeText(ctx, "Sending invite failed with code ${response.code()}", Toast.LENGTH_LONG).show()
+                                else -> ErrorHandler.handleErrors(ctx, response.errorBody()!!)
                             }
                         }
                     })

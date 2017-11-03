@@ -14,7 +14,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ProgressBar
-import android.widget.Toast
 import com.piikl.quester.R
 import com.piikl.quester.activity.MainActivity
 import com.piikl.quester.adapter.UserInviteAdapter
@@ -103,7 +102,7 @@ class InviteUserFragment : DialogFragment() {
                         loader.visibility = View.INVISIBLE
                     }
 
-                    else -> Toast.makeText(context, "searching users failed with code ${response.code()}", Toast.LENGTH_LONG).show()
+                    else -> ErrorHandler.handleErrors(context, response.errorBody()!!)
                 }
             }
         })

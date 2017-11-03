@@ -25,9 +25,9 @@ class CampaignCreate : CampaignCrud() {
             }
 
             override fun onResponse(call: Call<Campaign>?, response: Response<Campaign>) {
-                when(response.code()) {
+                when (response.code()) {
                     200 -> finish()
-                    else -> Toast.makeText(this@CampaignCreate, "Creating campaign failed with code ${response.code()}", Toast.LENGTH_LONG).show()
+                    else -> ErrorHandler.handleErrors(this@CampaignCreate, response.errorBody()!!)
                 }
             }
         })

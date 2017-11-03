@@ -60,7 +60,7 @@ class QuestCreate : QuestCrud() {
                     }
 
                     else -> {
-                        Toast.makeText(this@QuestCreate, "Saving quest failed with code ${response.code()}", Toast.LENGTH_LONG).show()
+                        ErrorHandler.handleErrors(this@QuestCreate, response.errorBody()!!)
                         setResult(Activity.RESULT_CANCELED)
                         finish()
                     }

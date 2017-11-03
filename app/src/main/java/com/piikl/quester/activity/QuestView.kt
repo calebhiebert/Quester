@@ -2,17 +2,24 @@ package com.piikl.quester.activity
 
 import android.app.Activity
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.design.widget.FloatingActionButton
+import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.*
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.ProgressBar
+import android.widget.TextView
 import com.piikl.quester.R
 import com.piikl.quester.api.ErrorHandler
 import com.piikl.quester.api.Quest
 import com.piikl.quester.setMenuVisibility
+import com.piikl.quester.setVisibility
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,6 +36,7 @@ class QuestView : CustomActivity() {
     lateinit var questGiver: TextView
     lateinit var questGiverLayout: LinearLayout
     lateinit var locationObtainedLayout: LinearLayout
+    lateinit var questStatusFab: FloatingActionButton
 
     private lateinit var quest: Quest
 
@@ -44,10 +52,9 @@ class QuestView : CustomActivity() {
         questGiver = findViewById(R.id.txtQuestGiver)
         questGiverLayout = findViewById(R.id.lltQuestGiver)
         locationObtainedLayout = findViewById(R.id.lltLocationObtained)
+        questStatusFab = findViewById(R.id.fabQuestStatus)
 
-        title.visibility = View.INVISIBLE
-        details.visibility = View.INVISIBLE
-        questIcon.visibility = View.GONE
+        setVisibility(View.INVISIBLE, title, details, questStatusFab, questIcon, questGiverLayout, locationObtainedLayout)
 
         val json = intent.getStringExtra("quest_json")
         quest = MainActivity.mapper.readValue(json, Quest::class.java)
@@ -57,6 +64,36 @@ class QuestView : CustomActivity() {
         } else {
             onDataLoaded(quest)
             loadData(quest.id)
+        }
+
+        questStatusFab.setOnClickListener {
+            setVisibility(View.INVISIBLE, title, details, questIcon, questGiverLayout, locationObtainedLayout)
+            setVisibility(View.VISIBLE, loader)
+
+            val quest = Quest()
+
+            quest.status = when(this.quest.status) {
+                Quest.Status.COMPLETE, Quest.Status.HIDDEN, Quest.Status.LOCKED, null -> Quest.Status.INCOMPLETE
+                Quest.Status.INCOMPLETE -> Quest.Status.IN_PROGRESS
+                Quest.Status.IN_PROGRESS -> Quest.Status.COMPLETE
+            }
+
+            MainActivity.questerService!!.editQuest(this.quest.id, quest).enqueue(object : Callback<Quest> {
+                override fun onFailure(call: Call<Quest>?, t: Throwable) {
+                    ErrorHandler.handleErrors(this@QuestView, t)
+                }
+
+                override fun onResponse(call: Call<Quest>?, response: Response<Quest>) {
+                    when(response.code()) {
+                        200 -> {
+                            this@QuestView.quest = response.body()!!
+                            this@QuestView.onDataLoaded(this@QuestView.quest)
+                        }
+
+                        else -> ErrorHandler.handleErrors(this@QuestView, response.errorBody()!!)
+                    }
+                }
+            })
         }
     }
 
@@ -99,7 +136,8 @@ class QuestView : CustomActivity() {
                     override fun onResponse(call: Call<Quest>?, response: Response<Quest>) {
                         when(response.code()) {
                             200, 404 -> { finish() }
-                            else -> Toast.makeText(this@QuestView, "Could not delete quest because of code ${response.code()}", Toast.LENGTH_LONG).show()
+
+                            else -> ErrorHandler.handleErrors(this@QuestView, response.errorBody()!!)
                         }
                     }
                 })
@@ -127,8 +165,42 @@ class QuestView : CustomActivity() {
         details.text = quest.details
 
         loader.visibility = View.INVISIBLE
-        title.visibility = View.VISIBLE
-        details.visibility = View.VISIBLE
+
+        setVisibility(View.VISIBLE, title, details, questIcon, questGiverLayout, locationObtainedLayout)
+
+        if(questIsMine()) {
+            questStatusFab.visibility = View.VISIBLE
+
+            when (quest.status) {
+                Quest.Status.COMPLETE -> {
+                    questStatusFab.setImageResource(R.drawable.ic_times)
+                    questStatusFab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, android.R.color.holo_red_light))
+                }
+
+                Quest.Status.INCOMPLETE -> {
+                    questStatusFab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, android.R.color.holo_green_dark))
+                    questStatusFab.setImageResource(R.drawable.ic_arrow_right)
+                }
+
+                Quest.Status.IN_PROGRESS -> {
+                    questStatusFab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, android.R.color.holo_green_light))
+                    questStatusFab.setImageResource(R.drawable.ic_check_white)
+                }
+
+                Quest.Status.LOCKED -> {
+                    questStatusFab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, android.R.color.holo_green_light))
+                    questStatusFab.setImageResource(R.drawable.ic_unlock_white)
+                }
+
+                Quest.Status.HIDDEN -> {
+                    questStatusFab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, android.R.color.holo_green_light))
+                    questStatusFab.setImageResource(R.drawable.ic_eye)
+                }
+            }
+
+        } else {
+            questStatusFab.visibility = View.INVISIBLE
+        }
 
         val resource = quest.getIconDrawble()
 

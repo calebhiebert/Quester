@@ -181,9 +181,7 @@ class CampaignView : CustomActivity(), InviteUserFragment.OnFragmentInteractionL
                     200 -> onDataUpdated(response.body()!!)
                     404 -> finish()
 
-                    else -> {
-                        Toast.makeText(this@CampaignView, "Got code ${response.code()} when loading campaign data", Toast.LENGTH_SHORT).show()
-                    }
+                    else -> ErrorHandler.handleErrors(this@CampaignView, response.errorBody()!!)
                 }
             }
 

@@ -36,18 +36,24 @@ class MainActivity : CustomActivity() {
 
         val mapper = ObjectMapper()
 
-        fun createApiClient(url: String?, username: String, password: String) {
+        fun createApiClient(url: String?, username: String, password: String): QuesterService? {
             if (url != null) {
                 val client = OkHttpClient.Builder()
                         .addInterceptor(AuthInterceptor(username, password))
                         .build()
 
-                questerService = Retrofit.Builder()
+                val retrofit = Retrofit.Builder()
                         .client(client)
                         .baseUrl(url)
                         .addConverterFactory(JacksonConverterFactory.create())
                         .build().create(QuesterService::class.java)
+
+                questerService = retrofit
+
+                return retrofit
             }
+
+            return null
         }
     }
 
@@ -178,9 +184,7 @@ class MainActivity : CustomActivity() {
                         campaignRecyclerView.visibility = View.VISIBLE
                     }
 
-                    else -> {
-                        Toast.makeText(this@MainActivity, "Failed to load campaigns with code ${response.code()}", Toast.LENGTH_LONG).show()
-                    }
+                    else -> ErrorHandler.handleErrors(this@MainActivity, response.errorBody()!!)
                 }
             }
 

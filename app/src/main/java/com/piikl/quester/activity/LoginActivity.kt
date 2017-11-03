@@ -56,10 +56,10 @@ class LoginActivity : CustomActivity(), Validator.ValidationListener {
         val uname = username.text.toString().trim()
         val pword = password.text.toString().trim()
 
-        MainActivity.createApiClient(prefs.getString("api_url", null), uname, pword)
+        val service = MainActivity.createApiClient(prefs.getString("api_url", null), uname, pword)
 
-        if(MainActivity.questerService != null) {
-            MainActivity.questerService!!.ping().enqueue(object : Callback<Boolean> {
+        if(service != null) {
+            service.ping().enqueue(object : Callback<Boolean> {
                 override fun onFailure(call: Call<Boolean>?, t: Throwable) {
                     ErrorHandler.handleErrors(this@LoginActivity, t)
                 }
@@ -79,9 +79,7 @@ class LoginActivity : CustomActivity(), Validator.ValidationListener {
                             password.error = "Incorrect username or password"
                         }
 
-                        else -> {
-                            Toast.makeText(this@LoginActivity, "Login failed with code ${response.code()}", Toast.LENGTH_LONG).show()
-                        }
+                        else -> ErrorHandler.handleErrors(this@LoginActivity, response.errorBody()!!)
                     }
                 }
             })

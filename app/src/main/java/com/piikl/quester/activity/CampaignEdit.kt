@@ -21,7 +21,7 @@ class CampaignEdit : CampaignCrud() {
         campaign = MainActivity.mapper.readValue(json, Campaign::class.java)
         onDataLoaded()
 
-        if(campaign.id == 0L)
+        if (campaign.id == 0L)
             finish()
     }
 
@@ -35,12 +35,13 @@ class CampaignEdit : CampaignCrud() {
 
         MainActivity.questerService!!.editCampaign(campaign.id, c).enqueue(object : Callback<Campaign> {
             override fun onResponse(call: Call<Campaign>?, response: Response<Campaign>) {
-                when(response.code()) {
+                when (response.code()) {
                     200 -> {
                         finish()
                     }
 
-                    else -> Toast.makeText(this@CampaignEdit, "Got code of ${response.code()}", Toast.LENGTH_LONG).show()
+
+                    else -> ErrorHandler.handleErrors(this@CampaignEdit, response.errorBody()!!)
                 }
             }
 

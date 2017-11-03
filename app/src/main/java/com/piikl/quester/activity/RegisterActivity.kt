@@ -71,7 +71,7 @@ class RegisterActivity : ValidatorActivity() {
                         usernameInput.error = "That username is already taken"
                     }
 
-                    else -> Toast.makeText(this@RegisterActivity, "Register failed: ${response.raw().body().toString()}", Toast.LENGTH_LONG).show()
+                    else -> ErrorHandler.handleErrors(this@RegisterActivity, response.errorBody()!!)
                 }
             }
 

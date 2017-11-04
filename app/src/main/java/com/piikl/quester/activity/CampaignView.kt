@@ -36,6 +36,8 @@ class CampaignView : CustomActivity(), InviteUserFragment.OnFragmentInteractionL
 
     lateinit var campaign: Campaign
 
+    private var netCall: Call<Campaign>? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_campaign_view)
@@ -175,7 +177,12 @@ class CampaignView : CustomActivity(), InviteUserFragment.OnFragmentInteractionL
     override fun onFragmentInteraction(uri: Uri) { }
 
     private fun loadData(id: Long) {
-        MainActivity.questerService!!.getCampaign(id).enqueue(object : retrofit2.Callback<Campaign> {
+        if(netCall != null)
+            netCall?.cancel()
+
+        netCall = MainActivity.questerService!!.getCampaign(id)
+
+        netCall!!.enqueue(object : retrofit2.Callback<Campaign> {
             override fun onResponse(call: Call<Campaign>, response: Response<Campaign>) {
                 when (response.code()) {
                     200 -> onDataUpdated(response.body()!!)

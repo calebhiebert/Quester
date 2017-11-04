@@ -36,10 +36,12 @@ class Quest() : Parcelable {
     constructor(parcel: Parcel) : this() {
         id = parcel.readLong()
         name = parcel.readString()
-        unlockedBy = parcel.createTypedArrayList(CREATOR)
+        unlocks = parcel.createTypedArrayList(CREATOR)
         locationObtained = parcel.readString()
         questGiver = parcel.readString()
         details = parcel.readString()
+        campaign = parcel.readParcelable(Campaign::class.java.classLoader)
+        unlockedBy = parcel.createTypedArrayList(CREATOR)
         status = Status.valueOf(parcel.readString())
         unlockMode = UnlockMode.valueOf(parcel.readString())
     }
@@ -74,15 +76,22 @@ class Quest() : Parcelable {
         return list
     }
 
+    override fun equals(other: Any?): Boolean {
+        return other is Quest && other.id == this.id
+    }
+
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeLong(id)
         parcel.writeString(name)
-        parcel.writeTypedList(unlockedBy)
+        parcel.writeTypedList(unlocks)
         parcel.writeString(locationObtained)
         parcel.writeString(questGiver)
         parcel.writeString(details)
+        parcel.writeParcelable(campaign, flags)
+        parcel.writeTypedList(unlockedBy)
         parcel.writeString(status!!.name)
         parcel.writeString(unlockMode!!.name)
+
     }
 
     override fun describeContents(): Int {
@@ -97,9 +106,5 @@ class Quest() : Parcelable {
         override fun newArray(size: Int): Array<Quest?> {
             return arrayOfNulls(size)
         }
-    }
-
-    override fun equals(other: Any?): Boolean {
-        return other is Quest && other.id == this.id
     }
 }

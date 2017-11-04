@@ -17,7 +17,7 @@ class ErrorHandler {
             when (t) {
                 is SocketTimeoutException -> Toast.makeText(ctx, "Could not connect to the api", Toast.LENGTH_LONG).show()
 
-                is IOException -> {}
+                is IOException -> { t.printStackTrace() }
 
                 else -> throw t
             }

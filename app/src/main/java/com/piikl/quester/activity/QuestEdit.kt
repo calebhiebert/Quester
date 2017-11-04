@@ -17,6 +17,9 @@ class QuestEdit : QuestCrud() {
         super.onCreate(savedInstanceState)
 
         quest = intent.getParcelableExtra("quest")
+        if(quest.id == 0L) { finish(); return }
+
+        questsInCampaign.remove(quest)
 
         nameInput.setText(quest.name)
         detailsInput.setText(quest.details)

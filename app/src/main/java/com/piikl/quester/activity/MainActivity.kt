@@ -1,5 +1,6 @@
 package com.piikl.quester.activity
 
+import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -10,7 +11,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
-import android.widget.Toast
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.piikl.quester.AuthInterceptor
 import com.piikl.quester.R
@@ -18,6 +18,7 @@ import com.piikl.quester.adapter.CampaignListAdapter
 import com.piikl.quester.api.Campaign
 import com.piikl.quester.api.ErrorHandler
 import com.piikl.quester.api.QuesterService
+import com.piikl.quester.api.User
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -26,6 +27,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 
 class MainActivity : CustomActivity() {
+
+    private val DEFAULT_API_URL = "https://questerv1.piikl.com"
+    private val LOGIN_REQUEST_CODE = 1
 
     lateinit var campaignRecyclerView: RecyclerView
     lateinit var adapter: CampaignListAdapter
@@ -71,8 +75,24 @@ class MainActivity : CustomActivity() {
         campaignRecyclerView.adapter = adapter
 
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        var apiUrl = getApiUrl(prefs)
 
-        createApi(prefs)
+        if(apiUrl == null) {
+            val edit = prefs.edit()
+            edit.putString("api_url", DEFAULT_API_URL)
+            edit.commit()
+            apiUrl = DEFAULT_API_URL
+        }
+
+        val user = getUsernamePass(prefs)
+        if(user == null) {
+            val intent = Intent(applicationContext, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_HISTORY
+            startActivity(intent)
+            return
+        }
+
+        createApiClient(apiUrl, user.name, user.password)
 
         prefs.registerOnSharedPreferenceChangeListener({ pref, value ->
             when (value) {
@@ -82,6 +102,16 @@ class MainActivity : CustomActivity() {
                 }
             }
         })
+
+        if(prefs.getBoolean("reopen_last_campaign", false)) {
+            val lastCampaignId = prefs.getLong("last_campaign_id", 0)
+
+            if(lastCampaignId != 0L) {
+                val intent = Intent(this, CampaignView::class.java)
+                intent.putExtra("campaign_id", lastCampaignId)
+                startActivity(intent)
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -95,6 +125,7 @@ class MainActivity : CustomActivity() {
                 edit.remove("username")
                 edit.remove("password")
                 edit.commit()
+                questerService = null
                 recreate()
                 true
             }
@@ -129,23 +160,32 @@ class MainActivity : CustomActivity() {
         startActivity(intent)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if(requestCode == LOGIN_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            recreate()
+        }
+    }
+
     override fun onResume() {
         super.onResume()
 
         if (questerService == null) {
-            createApi(PreferenceManager.getDefaultSharedPreferences(this))
+            val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+            val user = getUsernamePass(prefs)
+            val apiUrl = getApiUrl(prefs)
+
+            if(user != null && apiUrl != null) {
+                createApiClient(apiUrl, user.name, user.password)
+            }
         }
 
         loader.visibility = View.VISIBLE
         updateData()
     }
 
-    fun createApi(prefs: SharedPreferences) {
-        val apiUrl: String? = try {
-            prefs.getString("api_url", null)
-        } catch (e: Exception) {
-            e.printStackTrace(); null
-        }
+    private fun getUsernamePass(prefs: SharedPreferences): User? {
         val username: String? = try {
             prefs.getString("username", null)
         } catch (e: Exception) {
@@ -157,18 +197,22 @@ class MainActivity : CustomActivity() {
             e.printStackTrace(); null
         }
 
-        if (password.isNullOrEmpty() || username.isNullOrEmpty()) {
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-            return
+        if(!username.isNullOrEmpty() && !password.isNullOrEmpty()) {
+            val user = User()
+            user.name = username!!
+            user.password = password!!
+            return user
         }
 
-        if (apiUrl.isNullOrEmpty()) {
-            Toast.makeText(this, "Api url is not set", Toast.LENGTH_LONG).show()
-            return
-        }
+        return null
+    }
 
-        createApiClient(apiUrl!!, username!!, password!!)
+    private fun getApiUrl(prefs: SharedPreferences): String? {
+        return try {
+            prefs.getString("api_url", null)
+        } catch (e: Exception) {
+            e.printStackTrace(); null
+        }
     }
 
     private fun updateData() {

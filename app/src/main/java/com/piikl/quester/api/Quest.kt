@@ -30,7 +30,7 @@ class Quest() : Parcelable {
 
     var details: String? = null
 
-    @JsonIgnoreProperties("quests")
+    @JsonIgnoreProperties("questsInCampaign")
     var campaign: Campaign? = null
 
     constructor(parcel: Parcel) : this() {
@@ -42,8 +42,15 @@ class Quest() : Parcelable {
         details = parcel.readString()
         campaign = parcel.readParcelable(Campaign::class.java.classLoader)
         unlockedBy = parcel.createTypedArrayList(CREATOR)
-        status = Status.valueOf(parcel.readString())
-        unlockMode = UnlockMode.valueOf(parcel.readString())
+
+        val statusString = parcel.readString()
+        val unlockModeString = parcel.readString()
+
+        if(statusString != null)
+            status = Status.valueOf(statusString)
+
+        if(unlockModeString != null)
+            unlockMode = UnlockMode.valueOf(unlockModeString)
     }
 
     enum class Status {
@@ -89,8 +96,8 @@ class Quest() : Parcelable {
         parcel.writeString(details)
         parcel.writeParcelable(campaign, flags)
         parcel.writeTypedList(unlockedBy)
-        parcel.writeString(status!!.name)
-        parcel.writeString(unlockMode!!.name)
+        parcel.writeString(status?.name)
+        parcel.writeString(unlockMode?.name)
 
     }
 

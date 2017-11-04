@@ -62,6 +62,11 @@ class CampaignView : CustomActivity(), InviteUserFragment.OnFragmentInteractionL
 
             setVisibility(View.INVISIBLE, titleView, creatorView, questListView, createQuest)
             setVisibility(View.VISIBLE, loadingWheel)
+
+            val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+            val edit = prefs.edit()
+            edit.putLong("last_campaign_id", id)
+            edit.apply()
         }
     }
 

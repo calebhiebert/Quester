@@ -7,4 +7,8 @@
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:title="Api Url" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="reopen_last_campaign"
+        android:title="@string/reopen_last_campaign" />
 </PreferenceScreen>

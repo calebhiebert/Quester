@@ -1,6 +1,5 @@
 package com.piikl.quester.activity
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -71,6 +70,10 @@ class LoginActivity : CustomActivity(), Validator.ValidationListener {
                             edit.putString("username", uname)
                             edit.putString("password", pword)
                             edit.commit()
+
+                            val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                            applicationContext.startActivity(intent)
                             finish()
                         }
 
@@ -97,13 +100,7 @@ class LoginActivity : CustomActivity(), Validator.ValidationListener {
         login()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if(requestCode == REGISTER) {
-            if(resultCode == Activity.RESULT_OK) {
-                finish()
-            }
-        }
+    override fun onBackPressed() {
+        super.onBackPressed()
     }
 }

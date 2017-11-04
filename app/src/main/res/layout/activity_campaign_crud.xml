@@ -15,7 +15,7 @@
         android:layout_marginTop="8dp"
         android:ems="10"
         android:hint="@string/name"
-        android:inputType="textPersonName"
+        android:inputType="textCapWords"
         android:singleLine="true"
         android:text="@string/name"
         app:layout_constraintEnd_toEndOf="parent"

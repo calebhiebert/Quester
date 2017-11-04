@@ -20,4 +20,5 @@
     <string name="unlock_mode">Unlock Mode</string>
     <string name="quest_giver">Quest Giver</string>
     <string name="unlocked_by">Unlocked By</string>
+    <string name="reopen_last_campaign">Re-open last campaign</string>
 </resources>

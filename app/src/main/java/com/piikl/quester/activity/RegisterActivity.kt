@@ -1,11 +1,10 @@
 package com.piikl.quester.activity
 
-import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
 import com.mobsandgeeks.saripaar.annotation.Length
 import com.mobsandgeeks.saripaar.annotation.NotEmpty
 import com.piikl.quester.R
@@ -61,10 +60,10 @@ class RegisterActivity : ValidatorActivity() {
                         val edit = prefs.edit()
                         edit.putString("username", user.name)
                         edit.putString("password", user.password)
-                        edit.apply()
-
-                        setResult(Activity.RESULT_OK)
-                        finish()
+                        edit.commit()
+                        val intent = Intent(this@RegisterActivity, MainActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                        applicationContext.startActivity(intent)
                     }
 
                     406 -> {
@@ -79,10 +78,5 @@ class RegisterActivity : ValidatorActivity() {
                 ErrorHandler.handleErrors(this@RegisterActivity, t)
             }
         })
-    }
-
-    override fun onStop() {
-        super.onStop()
-        setResult(Activity.RESULT_CANCELED)
     }
 }

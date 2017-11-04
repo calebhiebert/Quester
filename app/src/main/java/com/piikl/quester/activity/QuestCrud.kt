@@ -3,6 +3,7 @@ package com.piikl.quester.activity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.*
 import com.mobsandgeeks.saripaar.annotation.Length
 import com.mobsandgeeks.saripaar.annotation.NotEmpty
@@ -37,7 +38,7 @@ abstract class QuestCrud : ValidatorActivity(), SelectQuestFragment.QuestSelecti
     protected lateinit var rdoHidden: RadioButton
 
     protected lateinit var unlockedBy: MutableList<Quest>
-    protected lateinit var quests: List<Quest>
+    protected lateinit var questsInCampaign: MutableList<Quest>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,7 +58,7 @@ abstract class QuestCrud : ValidatorActivity(), SelectQuestFragment.QuestSelecti
         unlockModeInput.adapter = ArrayAdapter<Quest.UnlockMode>(this, android.R.layout.simple_spinner_dropdown_item, Quest.UnlockMode.values())
 
         val campaign = intent.getParcelableExtra<Campaign>("campaign")
-        quests = campaign.quests!!
+        questsInCampaign = (campaign.quests as MutableList<Quest>?)!!
 
         unlockedByLabel.setOnClickListener { openUnlockedByDialog() }
         unlockedByView.setOnClickListener { openUnlockedByDialog() }
@@ -81,14 +82,10 @@ abstract class QuestCrud : ValidatorActivity(), SelectQuestFragment.QuestSelecti
 
     override fun selectionUpdated(selected: MutableList<Quest>) {
         unlockedBy = selected
-
-        var ulByView = ""
-
-        selected.forEach {
-            ulByView += "${it.name}, "
-        }
-
-        unlockedByView.text = ulByView
+        if(unlockedBy.count() > 0) {
+            unlockedByView.visibility = View.VISIBLE
+            unlockedByView.text = selected.joinToString { it.name as CharSequence }
+        } else unlockedByView.visibility = View.GONE
     }
 
     private fun openUnlockedByDialog() {
@@ -100,7 +97,7 @@ abstract class QuestCrud : ValidatorActivity(), SelectQuestFragment.QuestSelecti
 
         ft.addToBackStack(null)
 
-        val frag = SelectQuestFragment.newInstance(quests, unlockedBy)
+        val frag = SelectQuestFragment.newInstance(questsInCampaign, unlockedBy)
         frag.show(ft, "dialog")
     }
 

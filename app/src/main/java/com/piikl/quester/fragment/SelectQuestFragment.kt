@@ -47,7 +47,7 @@ class SelectQuestFragment : DialogFragment() {
         super.onCreate(savedInstanceState)
 
         if (arguments != null) {
-            quests = arguments.getParcelableArrayList("quests")
+            quests = arguments.getParcelableArrayList("questsInCampaign")
             selectedQuests = arguments.getParcelableArrayList("selectedQuests")
 
             questListAdapter = QuestChecklistAdapter({ sListener.selectionUpdated(it) }, selectedQuests)
@@ -78,7 +78,7 @@ class SelectQuestFragment : DialogFragment() {
             val args = Bundle()
 
             args.putParcelableArrayList("selectedQuests", selected as ArrayList<Quest>)
-            args.putParcelableArrayList("quests", quests as ArrayList<Quest>)
+            args.putParcelableArrayList("questsInCampaign", quests as ArrayList<Quest>)
             fragment.arguments = args
             return fragment
         }

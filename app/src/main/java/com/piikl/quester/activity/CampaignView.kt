@@ -150,7 +150,7 @@ class CampaignView : CustomActivity(), InviteUserFragment.OnFragmentInteractionL
 
         createQuest.setOnClickListener({
             val intent = Intent(this, QuestCreate::class.java)
-            intent.putExtra("campaign_id", campaign.id)
+            intent.putExtra("campaign", campaign)
             startActivity(intent)
         })
 

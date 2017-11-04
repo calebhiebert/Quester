@@ -146,7 +146,7 @@ class QuestView : CustomActivity() {
 
                     override fun onResponse(call: Call<Quest>?, response: Response<Quest>) {
                         when(response.code()) {
-                            200, 404 -> { finish() }
+                            404, 200 -> finish()
 
                             else -> ErrorHandler.handleErrors(this@QuestView, response.errorBody()!!)
                         }

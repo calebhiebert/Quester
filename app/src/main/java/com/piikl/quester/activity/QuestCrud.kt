@@ -58,7 +58,11 @@ abstract class QuestCrud : ValidatorActivity(), SelectQuestFragment.QuestSelecti
         unlockModeInput.adapter = ArrayAdapter<Quest.UnlockMode>(this, android.R.layout.simple_spinner_dropdown_item, Quest.UnlockMode.values())
 
         val campaign = intent.getParcelableExtra<Campaign>("campaign")
-        questsInCampaign = (campaign.quests as MutableList<Quest>?)!!
+
+        questsInCampaign = if(campaign?.quests == null)
+            mutableListOf()
+        else
+            (campaign.quests as MutableList<Quest>?)!!
 
         unlockedByLabel.setOnClickListener { openUnlockedByDialog() }
         unlockedByView.setOnClickListener { openUnlockedByDialog() }

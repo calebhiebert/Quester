@@ -3,6 +3,7 @@ package com.piikl.quester.activity
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import com.piikl.quester.api.Campaign
 import com.piikl.quester.api.ErrorHandler
 import com.piikl.quester.api.Quest
 import retrofit2.Call
@@ -11,16 +12,17 @@ import retrofit2.Response
 
 class QuestCreate : QuestCrud() {
 
-    private var campaignId: Long = 0
+    private lateinit var campaign: Campaign
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        campaignId = intent.getLongExtra("campaign_id", 0)
+        campaign = intent.getParcelableExtra<Campaign>("campaign")
 
-        if(campaignId == 0L)
+        if(campaign.id == 0L)
             finish()
         else {
+            questsInCampaign = campaign.quests as MutableList<Quest>
             unlockedBy = mutableListOf()
         }
     }
@@ -44,7 +46,7 @@ class QuestCreate : QuestCrud() {
 
         newQuest.unlockMode = unlockModeInput.selectedItem as Quest.UnlockMode
 
-        MainActivity.questerService!!.createQuest(campaignId, newQuest).enqueue(object : Callback<Quest> {
+        MainActivity.questerService!!.createQuest(campaign.id, newQuest).enqueue(object : Callback<Quest> {
             override fun onFailure(call: Call<Quest>?, t: Throwable) {
                 ErrorHandler.handleErrors(this@QuestCreate, t)
             }

@@ -3,7 +3,6 @@ package com.piikl.quester.activity
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import com.piikl.quester.api.ErrorHandler
 import com.piikl.quester.api.Quest
 import retrofit2.Call
@@ -17,8 +16,7 @@ class QuestEdit : QuestCrud() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val json = intent.getStringExtra("quest_json")
-        quest = MainActivity.mapper.readValue(json, Quest::class.java)
+        quest = intent.getParcelableExtra("quest")
 
         nameInput.setText(quest.name)
         detailsInput.setText(quest.details)
@@ -26,6 +24,15 @@ class QuestEdit : QuestCrud() {
         questGiverInput.setText(quest.questGiver)
 
         unlockModeInput.setSelection(quest.unlockMode!!.ordinal)
+
+        if(quest.unlockedBy != null) {
+            unlockedBy = quest.unlockedBy!!
+            unlockedBy.remove(quest)
+        } else {
+            unlockedBy = mutableListOf()
+        }
+
+        selectionUpdated(unlockedBy)
 
         when(quest.status) {
             Quest.Status.LOCKED -> rdoLocked.isChecked = true
@@ -55,6 +62,11 @@ class QuestEdit : QuestCrud() {
         }
 
         newQuest.unlockMode = unlockModeInput.selectedItem as Quest.UnlockMode
+        newQuest.unlockedBy = unlockedBy
+
+        val result = Intent()
+        result.putExtra("quest", newQuest)
+        setResult(Activity.RESULT_OK, result)
 
         MainActivity.questerService!!.editQuest(quest.id, newQuest).enqueue(object : Callback<Quest> {
             override fun onFailure(call: Call<Quest>?, t: Throwable) {
@@ -62,22 +74,13 @@ class QuestEdit : QuestCrud() {
             }
 
             override fun onResponse(call: Call<Quest>?, response: Response<Quest>) {
-                when(response.code()) {
-                    200 -> {
-                        val result = Intent()
-                        result.putExtra("quest_json", MainActivity.mapper.writeValueAsString(response.body()))
-                        setResult(Activity.RESULT_OK, result)
-                        finish()
-                    }
-
-                    else -> {
-                        ErrorHandler.handleErrors(this@QuestEdit, response.errorBody()!!)
-                        setResult(Activity.RESULT_CANCELED)
-                        finish()
-                    }
+                if(response.code() != 200) {
+                    ErrorHandler.handleErrors(applicationContext, response.errorBody()!!)
                 }
             }
         })
+
+        finish()
     }
 
     override fun onBackPressed() {

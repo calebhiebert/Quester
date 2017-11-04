@@ -164,10 +164,10 @@ class CampaignView : CustomActivity(), InviteUserFragment.OnFragmentInteractionL
     }
 
     fun onQuestSelected(quest: Quest) {
-        quest.campaign = campaign
-
         val intent = Intent(this, QuestView::class.java)
-        intent.putExtra("quest_json", MainActivity.mapper.writeValueAsString(quest))
+        intent.putExtra("quest", quest)
+        intent.putExtra("campaign", campaign)
+        intent.putExtra("user", campaign.creator)
 
         startActivity(intent)
     }

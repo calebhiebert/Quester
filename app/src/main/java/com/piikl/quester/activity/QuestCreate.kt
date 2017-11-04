@@ -3,7 +3,6 @@ package com.piikl.quester.activity
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import com.piikl.quester.api.ErrorHandler
 import com.piikl.quester.api.Quest
 import retrofit2.Call
@@ -22,7 +21,7 @@ class QuestCreate : QuestCrud() {
         if(campaignId == 0L)
             finish()
         else {
-
+            unlockedBy = mutableListOf()
         }
     }
 

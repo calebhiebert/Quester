@@ -1,12 +1,14 @@
 package com.piikl.quester.api
 
+import android.os.Parcel
+import android.os.Parcelable
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.piikl.quester.R
 import com.piikl.quester.api.Quest.Status.*
 import java.util.*
 
-class Quest() {
+class Quest() : Parcelable {
 
     var id: Long = 0
 
@@ -14,7 +16,7 @@ class Quest() {
     var updated: Date? = null
     var created: Date? = null
 
-    var unlockedBy: List<Quest>? = null
+    var unlockedBy: MutableList<Quest>? = null
 
     var unlockMode: UnlockMode? = null
 
@@ -30,6 +32,17 @@ class Quest() {
 
     @JsonIgnoreProperties("quests")
     var campaign: Campaign? = null
+
+    constructor(parcel: Parcel) : this() {
+        id = parcel.readLong()
+        name = parcel.readString()
+        unlockedBy = parcel.createTypedArrayList(CREATOR)
+        locationObtained = parcel.readString()
+        questGiver = parcel.readString()
+        details = parcel.readString()
+        status = Status.valueOf(parcel.readString())
+        unlockMode = UnlockMode.valueOf(parcel.readString())
+    }
 
     enum class Status {
         COMPLETE, INCOMPLETE, IN_PROGRESS, LOCKED, HIDDEN
@@ -53,5 +66,40 @@ class Quest() {
             COMPLETE -> R.drawable.ic_check_circle
             else -> null
         }
+    }
+
+    fun getUnlockedByIds() : MutableList<Long> {
+        val list = mutableListOf<Long>()
+        unlockedBy?.forEach { list.add(it.id) }
+        return list
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeLong(id)
+        parcel.writeString(name)
+        parcel.writeTypedList(unlockedBy)
+        parcel.writeString(locationObtained)
+        parcel.writeString(questGiver)
+        parcel.writeString(details)
+        parcel.writeString(status!!.name)
+        parcel.writeString(unlockMode!!.name)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<Quest> {
+        override fun createFromParcel(parcel: Parcel): Quest {
+            return Quest(parcel)
+        }
+
+        override fun newArray(size: Int): Array<Quest?> {
+            return arrayOfNulls(size)
+        }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return other is Quest && other.id == this.id
     }
 }

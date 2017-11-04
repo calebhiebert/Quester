@@ -15,6 +15,16 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
+            <TextView
+                android:id="@+id/txtUnlockedByLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/unlocked_by"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/spnUnlockMode" />
+
             <EditText
                 android:id="@+id/txtQuestGiverInput"
                 android:layout_width="0dp"
@@ -34,7 +44,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="Quest Giver"
+                android:labelFor="@id/txtQuestGiverInput"
+                android:text="@string/quest_giver"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/txtLocationObtainedInput" />
 
@@ -149,10 +160,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
                 android:text="Quest Status"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/spnUnlockMode" />
+                app:layout_constraintTop_toBottomOf="@+id/txtUnlockedBy" />
 
             <EditText
                 android:id="@+id/txtDetailsInput"
@@ -177,6 +187,15 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView8" />
+
+            <TextView
+                android:id="@+id/txtUnlockedBy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txtUnlockedByLabel" />
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
 

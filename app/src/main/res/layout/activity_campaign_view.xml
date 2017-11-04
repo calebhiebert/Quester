@@ -13,9 +13,10 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:clickable="true"
+        app:backgroundTint="@color/colorAccent"
         app:layout_constraintBottom_toBottomOf="@+id/recCampaignViewQuestList"
         app:layout_constraintEnd_toEndOf="@+id/recCampaignViewQuestList"
-        app:srcCompat="@drawable/ic_pencil_square" />
+        app:srcCompat="@drawable/ic_plus" />
 
     <ProgressBar
         android:id="@+id/ldgCampaignViewLoader"

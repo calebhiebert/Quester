@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.content.ContextCompat
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -16,8 +15,10 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.piikl.quester.R
+import com.piikl.quester.api.Campaign
 import com.piikl.quester.api.ErrorHandler
 import com.piikl.quester.api.Quest
+import com.piikl.quester.api.User
 import com.piikl.quester.setMenuVisibility
 import com.piikl.quester.setVisibility
 import retrofit2.Call
@@ -37,8 +38,12 @@ class QuestView : CustomActivity() {
     lateinit var questGiverLayout: LinearLayout
     lateinit var locationObtainedLayout: LinearLayout
     lateinit var questStatusFab: FloatingActionButton
+    lateinit var unlocks: TextView
+    lateinit var unlocksLayout: LinearLayout
 
     private lateinit var quest: Quest
+    private lateinit var campaign: Campaign
+    private lateinit var creator: User
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,11 +58,14 @@ class QuestView : CustomActivity() {
         questGiverLayout = findViewById(R.id.lltQuestGiver)
         locationObtainedLayout = findViewById(R.id.lltLocationObtained)
         questStatusFab = findViewById(R.id.fabQuestStatus)
+        unlocks = findViewById(R.id.txtUnlocks)
+        unlocksLayout = findViewById(R.id.lltUnlocks)
 
-        setVisibility(View.INVISIBLE, title, details, questStatusFab, questIcon, questGiverLayout, locationObtainedLayout)
+        setVisibility(View.INVISIBLE, title, details, questStatusFab, questIcon, questGiverLayout, locationObtainedLayout, unlocksLayout)
 
-        val json = intent.getStringExtra("quest_json")
-        quest = MainActivity.mapper.readValue(json, Quest::class.java)
+        quest = intent.getParcelableExtra("quest")
+        campaign = intent.getParcelableExtra("campaign")
+        creator = intent.getParcelableExtra("user")
 
         if(quest.id == 0L) {
             finish()
@@ -67,7 +75,7 @@ class QuestView : CustomActivity() {
         }
 
         questStatusFab.setOnClickListener {
-            setVisibility(View.INVISIBLE, title, details, questIcon, questGiverLayout, locationObtainedLayout)
+            setVisibility(View.INVISIBLE, title, details, questIcon, questGiverLayout, locationObtainedLayout, unlocksLayout)
             setVisibility(View.VISIBLE, loader)
 
             val quest = Quest()
@@ -123,7 +131,10 @@ class QuestView : CustomActivity() {
         when(item.itemId) {
             R.id.mnuQuestViewEdit -> {
                 val intent = Intent(this, QuestEdit::class.java)
-                intent.putExtra("quest_json", MainActivity.mapper.writeValueAsString(quest))
+
+                intent.putExtra("quest", quest)
+                intent.putExtra("campaign", campaign)
+                intent.putExtra("selectedQuests", arrayListOf(quest.unlockedBy))
                 startActivityForResult(intent, EDIT_QUEST)
             }
 
@@ -150,9 +161,7 @@ class QuestView : CustomActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if(requestCode == EDIT_QUEST) {
             if(resultCode == Activity.RESULT_OK && data != null) {
-                val json = data.getStringExtra("quest_json")
-                Log.d("Got quest", json)
-                quest = MainActivity.mapper.readValue(json, Quest::class.java)
+                quest = data.getParcelableExtra("quest")
                 onDataLoaded(quest)
             }
         }
@@ -160,13 +169,15 @@ class QuestView : CustomActivity() {
 
     private fun onDataLoaded(quest: Quest) {
         this.quest = quest
+        this.campaign.creator = creator
+        this.quest.campaign = campaign
 
         title.text = quest.name
         details.text = quest.details
 
         loader.visibility = View.INVISIBLE
 
-        setVisibility(View.VISIBLE, title, details, questIcon, questGiverLayout, locationObtainedLayout)
+        setVisibility(View.VISIBLE, title, details, questIcon)
 
         if(questIsMine()) {
             questStatusFab.visibility = View.VISIBLE
@@ -220,6 +231,11 @@ class QuestView : CustomActivity() {
             locationObtainedLayout.visibility = View.VISIBLE
             locationObtained.text = quest.locationObtained
         } else locationObtainedLayout.visibility = View.GONE
+
+        if(quest.unlocks != null && quest.unlocks!!.count() > 0) {
+            unlocksLayout.visibility = View.VISIBLE
+            unlocks.text = "Unlocks: ${quest.unlocks!!.joinToString { return@joinToString it.name as CharSequence }}"
+        } else unlocksLayout.visibility = View.GONE
 
         invalidateOptionsMenu()
     }

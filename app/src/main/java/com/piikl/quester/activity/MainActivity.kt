@@ -11,6 +11,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
+import android.widget.TextView
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.piikl.quester.AuthInterceptor
 import com.piikl.quester.R
@@ -34,6 +35,9 @@ class MainActivity : CustomActivity() {
     lateinit var campaignRecyclerView: RecyclerView
     lateinit var adapter: CampaignListAdapter
     lateinit var loader: ProgressBar
+    lateinit var noCampaignsMessage: TextView
+
+    var netCall: Call<List<Campaign>>? = null
 
     companion object {
         var questerService: QuesterService? = null
@@ -73,6 +77,8 @@ class MainActivity : CustomActivity() {
 
         adapter = CampaignListAdapter()
         campaignRecyclerView.adapter = adapter
+
+        noCampaignsMessage = findViewById(R.id.txtNoCampaignsMessage)
 
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         var apiUrl = getApiUrl(prefs)
@@ -124,6 +130,7 @@ class MainActivity : CustomActivity() {
                 val edit = prefs.edit()
                 edit.remove("username")
                 edit.remove("password")
+                edit.remove("last_campaign_id")
                 edit.commit()
                 questerService = null
                 recreate()
@@ -147,6 +154,7 @@ class MainActivity : CustomActivity() {
             R.id.mnuCampaignListRefresh -> {
                 loader.visibility = View.VISIBLE
                 campaignRecyclerView.visibility = View.INVISIBLE
+                noCampaignsMessage.visibility = View.GONE
                 updateData()
             }
         }
@@ -182,6 +190,7 @@ class MainActivity : CustomActivity() {
         }
 
         loader.visibility = View.VISIBLE
+        noCampaignsMessage.visibility = View.GONE
         updateData()
     }
 
@@ -219,13 +228,27 @@ class MainActivity : CustomActivity() {
         if (questerService == null)
             return
 
-        questerService!!.listCampaigns().enqueue(object : Callback<List<Campaign>> {
+        if(netCall != null) {
+            netCall!!.cancel()
+            netCall = null
+        }
+
+        netCall = questerService!!.listCampaigns()
+
+        netCall!!.enqueue(object : Callback<List<Campaign>> {
             override fun onResponse(call: Call<List<Campaign>>, response: Response<List<Campaign>>) {
                 when (response.code()) {
                     200 -> {
                         adapter.data = response.body()
                         loader.visibility = View.GONE
-                        campaignRecyclerView.visibility = View.VISIBLE
+
+                        if(adapter.itemCount == 0) {
+                            campaignRecyclerView.visibility = View.GONE
+                            noCampaignsMessage.visibility = View.VISIBLE
+                        } else {
+                            campaignRecyclerView.visibility = View.VISIBLE
+                            noCampaignsMessage.visibility = View.GONE
+                        }
                     }
 
                     else -> ErrorHandler.handleErrors(this@MainActivity, response.errorBody()!!)

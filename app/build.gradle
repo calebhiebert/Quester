@@ -10,8 +10,8 @@ android {
         applicationId "com.piikl.quester"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 3
-        versionName "0.0.2"
+        versionCode 126000004
+        versionName "0.0.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

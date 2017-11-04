@@ -160,7 +160,7 @@ class CampaignView : CustomActivity(), InviteUserFragment.OnFragmentInteractionL
         setVisibility(View.VISIBLE, titleView, creatorView, questListView, createQuest)
         loadingWheel.visibility = View.GONE
 
-        questListAdapter.questList = campaign.quests
+        questListAdapter.questList = campaign.quests?.sortedBy { it.id }
 
         if(campaignIsMine())
             createQuest.visibility = View.VISIBLE

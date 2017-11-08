@@ -13,13 +13,9 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.piikl.quester.AuthInterceptor
 import com.piikl.quester.R
 import com.piikl.quester.adapter.CampaignListAdapter
-import com.piikl.quester.api.Campaign
-import com.piikl.quester.api.ErrorHandler
-import com.piikl.quester.api.QuesterService
-import com.piikl.quester.api.User
+import com.piikl.quester.api.*
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback

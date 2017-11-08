@@ -1,4 +1,4 @@
-package com.piikl.quester
+package com.piikl.quester.api
 
 import okhttp3.Credentials
 import okhttp3.Interceptor

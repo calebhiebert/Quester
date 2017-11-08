@@ -8,10 +8,10 @@ android {
     compileSdkVersion 26
     defaultConfig {
         applicationId "com.piikl.quester"
-        minSdkVersion 21
+        minSdkVersion 20
         targetSdkVersion 26
-        versionCode 126000004
-        versionName "0.0.4"
+        versionCode 126000005
+        versionName "0.0.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

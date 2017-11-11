@@ -1,4 +1,4 @@
-package com.piikl.quester.activity
+package com.piikl.quester.fragment
 
 
 import android.os.Bundle
